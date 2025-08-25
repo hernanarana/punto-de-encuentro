@@ -34,7 +34,7 @@ jobs:
           node -v
           npm -v
 
-      # usa npm ci si puede, si no, cae a npm install
+      # usa npm ci si puede, si no cae a npm install
       - name: Install deps
         run: npm ci || npm install
 
@@ -48,9 +48,12 @@ jobs:
           echo "Usando BASE=$BASE"
           npm run build -- --base="$BASE"
 
+      # Fallback SPA para React Router
+      - name: Create 404.html
+        run: cp dist/index.html dist/404.html
+
       - name: Ensure dist exists
         run: |
-          ls -la
           ls -la dist || (echo "❌ No se generó dist/"; exit 1)
 
       - name: Upload artifact
