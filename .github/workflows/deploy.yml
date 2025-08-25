@@ -15,8 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # nombre EXACTO de tu repo
-  REPO_NAME: "punto-de-encuentro"
+  REPO_NAME: "punto-de-encuentro"   # <- tu repo
 
 jobs:
   build:
@@ -30,10 +29,15 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install deps
-        run: npm ci
+      - name: Show versions
+        run: |
+          node -v
+          npm -v
 
-      # Calcula el --base correcto para Vite
+      # usa npm ci si puede, si no, cae a npm install
+      - name: Install deps
+        run: npm ci || npm install
+
       - name: Build with base
         run: |
           if [ "${{ env.REPO_NAME }}" = "${{ github.repository_owner }}.github.io" ]; then
@@ -44,9 +48,10 @@ jobs:
           echo "Usando BASE=$BASE"
           npm run build -- --base="$BASE"
 
-      # SPA fallback (para React Router en GitHub Pages)
-      - name: Create 404.html
-        run: cp dist/index.html dist/404.html
+      - name: Ensure dist exists
+        run: |
+          ls -la
+          ls -la dist || (echo "❌ No se generó dist/"; exit 1)
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -56,10 +61,13 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
