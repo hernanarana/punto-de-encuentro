@@ -2,13 +2,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Vercel setea VERCEL=1 durante el build
-const isVercel = process.env.VERCEL === "1" || process.env.VERCEL === "true";
-
-// ⚠️ cambiá "punto-de-encuentro" si tu repo se llama distinto
-const GH_BASE = "/punto-de-encuentro/";
+const isGH = process.env.GITHUB_ACTIONS === "true";
+const repo = "punto-de-encuentro";
 
 export default defineConfig({
-  base: isVercel ? "/" : GH_BASE,
   plugins: [react()],
+  base: isGH ? `/${repo}/` : "/",
+  server: { host: true, port: 5173 },
 });
