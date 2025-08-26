@@ -1,12 +1,10 @@
-// vite.config.js
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-const isGH = process.env.GITHUB_ACTIONS === "true";
-const repo = "punto-de-encuentro";
+// En Vercel -> "/"; en GitHub Pages -> "/punto-de-encuentro/"
+const isVercel = !!process.env.VERCEL;
 
 export default defineConfig({
+  base: isVercel ? "/" : "/punto-de-encuentro/",
   plugins: [react()],
-  base: isGH ? `/${repo}/` : "/",
-  server: { host: true, port: 5173 },
 });
