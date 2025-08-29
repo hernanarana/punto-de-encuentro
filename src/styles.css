@@ -1,3 +1,6 @@
+/* =========================
+   VARIABLES & BASE
+   ========================= */
 :root{
   --primary:#0ea5e9;      /* celeste */
   --bg:#f6f8fb;
@@ -7,8 +10,8 @@
   --shadow:0 6px 20px rgba(0,0,0,.06);
 }
 
-*{box-sizing:border-box}
-html,body,#root{height:100%}
+*{ box-sizing:border-box }
+html,body,#root{ height:100% }
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
@@ -16,160 +19,80 @@ body{
   background:var(--bg);
 }
 
-/* ---------- Contenedor ---------- */
-.container{max-width:1200px;margin:0 auto;padding:16px}
+/* =========================
+   HELPERS / UTILS
+   ========================= */
+.container{ max-width:1200px; margin:0 auto; padding:16px }
 @media (max-width:820px){
-  /* deja espacio para la bottom-tab */
-  .container{ padding:12px 12px calc(12px + 84px); }
+  /* deja espacio para la bottom-tab / tabbar */
+  .container{ padding:12px 12px calc(12px + 84px) }
 }
 
-/* ---------- Nav scrollable ---------- */
+.ul-clean{ list-style:none; padding:0; margin:0 }
+
+img{ max-width:100%; height:auto; display:block }
+
+/* Visibilidad por breakpoint */
+.mobile-only{ display:none }
+.desktop-only{ display:block }
+@media (max-width: 990px){
+  .mobile-only{ display:block }
+  .desktop-only{ display:none }
+}
+
+/* =========================
+   NAVEGACIÓN / LAYOUT
+   ========================= */
 .nav-scroll{
   display:flex; gap:14px; font-weight:600;
   overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
 }
-.nav-scroll::-webkit-scrollbar{display:none}
+.nav-scroll::-webkit-scrollbar{ display:none }
 
-/* ---------- Grid Home (3→1 col) ---------- */
-.layout-grid{ display:grid; gap:16px; grid-template-columns:260px 1fr 300px; }
-@media (max-width:1024px){ .layout-grid{ grid-template-columns:220px 1fr } }
-@media (max-width:820px){
+.layout-grid{
+  display:grid; gap:16px; grid-template-columns:270px 1fr 300px;
+}
+@media (max-width:1200px){
+  .layout-grid{ grid-template-columns:250px 1fr }
+}
+@media (max-width:990px){
   .layout-grid{ grid-template-columns:1fr }
-  .desktop-only{ display:none!important }
-  .mobile-only{ display:initial!important }
 }
-.mobile-only{ display:none }
 
-/* ---------- Barra de acciones móvil ---------- */
+/* Barra sticky de acciones en mobile (no tapa contenido) */
 .mobile-stickybar{
-  position:sticky; top:64px; z-index:40;
-  background:var(--bg); padding:8px 0;
-  display:flex; gap:8px;
+  position:sticky; top:64px; z-index:25;
+  display:flex; gap:8px; padding:8px;
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(8px);
+  border-radius:12px; margin-bottom:8px;
 }
 
-/* ---------- Botones ---------- */
-.btn{
-  appearance:none; border:none; border-radius:12px;
-  padding:12px 14px; font-weight:800; cursor:pointer;
-  box-shadow:var(--shadow);
+/* Chips de filtros activos */
+.chips{
+  display:flex; flex-wrap:wrap; gap:6px;
+  margin:6px 0 12px;
 }
-.btn--primary{ background:var(--primary); color:#fff }
-.btn--ghost{ background:#fff; color:var(--text) }
-
-/* ---------- Chips de filtro (resumen) ---------- */
-.chips{ display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0 }
 .chip{
-  background:#fff; border:1px solid #e2e8f0; border-radius:999px;
-  padding:6px 10px; font-size:12px; display:inline-flex; gap:8px; align-items:center;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; background:#f2f5f9;
+  border:1px solid #e7ecf3; border-radius:999px;
+  font-size:13px;
 }
-.chip button{ border:none; background:transparent; cursor:pointer; font-weight:900; line-height:1 }
-
-/* ---------- Grilla de productos ---------- */
-.card-grid{ display:grid; gap:16px; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); }
-/* En móviles, 1 por fila para que no queden pegados al borde */
-@media (max-width:560px){ .card-grid{ grid-template-columns:1fr } }
-
-.card{ background:var(--card); border-radius:12px; padding:12px; box-shadow:var(--shadow); display:grid; gap:10px }
-.card-img{ width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:8px }
-.clamp-2{ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden }
-
-/* ---------- Detalle ---------- */
-.pd-wrap{ max-width:1100px; margin:0 auto; padding:24px 16px }
-.pd-breadcrumb{ font-size:14px; margin-bottom:12px; color:#475569 }
-.pd-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px }
-@media (max-width:900px){ .pd-grid{ grid-template-columns:1fr } }
-.pd-mainimg{ width:100%; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,.08); object-fit:cover }
-.pd-thumbs{ display:flex; gap:8px; margin-top:12px; overflow-x:auto; padding-bottom:4px }
-.pd-thumb{ width:90px; height:90px; border-radius:8px; object-fit:cover; cursor:pointer; border:1px solid #e2e8f0 }
-.pd-title{ margin:0 0 8px }
-.pd-rating{ margin:0; color:#ffb400 }
-.pd-price{ font-size:28px; font-weight:700; margin:8px 0 }
-.pd-actions{ display:flex; gap:12px; margin:12px 0 }
-.pd-btn{ padding:12px 16px; border-radius:10px; border:none; background:var(--primary); color:#fff; font-weight:800; cursor:pointer }
-.pd-link{ align-self:center; color:var(--primary); text-decoration:none }
-.pd-section{ margin-top:32px }
-.pd-wa{ margin-top:8px; display:inline-flex; align-items:center; gap:10px; background:#25D366; color:#fff; padding:12px 14px; border-radius:10px; text-decoration:none; font-weight:800; box-shadow:0 8px 20px rgba(0,0,0,.12) }
-.pd-wa:hover{ filter:brightness(.95) }
-
-/* CTA fija inferior en detalle (móvil) */
-.pd-cta{
-  position:fixed; left:0; right:0; bottom:0; z-index:75; background:#fff;
-  box-shadow:0 -10px 30px rgba(0,0,0,.15);
-  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-  display:flex; gap:10px;
-}
-.pd-cta .btn{ flex:1 }
-@media (min-width:821px){ .pd-cta{ display:none } }
-
-/* ---------- Modal genérico ---------- */
-.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:grid; place-items:center; z-index:99999 }
-.modal{
-  width:min(680px,92vw); max-height:85vh; overflow:auto;
-  background:#fff; border-radius:16px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.25)
+.chip button{
+  all:unset; cursor:pointer; font-weight:700;
 }
 
-/* ---------- Bottom Tab (móvil) ---------- */
-.bottom-tab{
-  position:fixed; left:0; right:0; bottom:0; z-index:70;
-  background:#fff; box-shadow:0 -10px 30px rgba(0,0,0,.12);
-  display:flex; justify-content:space-around; gap:4px;
-  padding:8px 8px calc(8px + env(safe-area-inset-bottom));
-}
-.bottom-tab a, .bottom-tab button{
-  background:none; border:none; color:var(--text);
-  text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:4px;
-  font-size:12px; padding:10px 12px; border-radius:10px;
-}
-.bottom-tab .is-primary{ color:var(--primary) }
-@media (min-width:821px){ .bottom-tab{ display:none } }
-
-/* ---------- Footer (evitar solapes) ---------- */
-.site-footer{ background:#0b1220; color:#fff; }
-.site-footer a{ color:#cdeafe; text-decoration:none }
-@media (max-width:820px){
-  .site-footer{ padding-bottom:84px; } /* espacio para la bottom-tab */
-}
-
-
-
-
-/* ===== TopBar responsive (número sin montarse) ===== */
-.topbar{ background:#dcfce7; color:#065f46; font-weight:600; }
+/* =========================
+   TOP BAR / HEADER
+   ========================= */
+.topbar{ background:#dcfce7; color:#065f46; font-weight:600 }
 .topbar-row{
   display:flex; align-items:center; gap:10px; padding:6px 0;
-  flex-wrap:wrap; justify-content:center; /* se parte en 2 líneas cuando hace falta */
+  flex-wrap:wrap; justify-content:center;
 }
 .topbar .label{ font-size:14px }
-.topbar .tel{
-  display:inline-flex; align-items:center; gap:8px;
-  background:#22c55e; color:#fff; text-decoration:none;
-  padding:6px 10px; border-radius:999px; box-shadow:var(--shadow);
-  white-space:nowrap; /* mantiene el número en una misma pill */
-}
-
-/* Ocultar botón de Soporte en header cuando es mobile */
-@media (max-width:820px){
-  .desktop-only{ display:none !important; }
-}
-
-
-
-
-/* FAB de WhatsApp: visible SOLO en desktop para no chocar con la bottom-tab */
-.wa-fab{
-  position:fixed; right:16px; bottom:16px; z-index:80;
-  width:56px; height:56px; display:grid; place-items:center;
-  border-radius:50%; box-shadow:0 10px 30px rgba(0,0,0,.2);
-}
-@media (max-width:820px){
-  .wa-fab{ display:none; }           /* oculto en mobile */
-  .desktop-only{ display:none!important; } /* refuerzo por si falta */
-}
-
-/* TopBar: número dentro de pill y sin montarse */
-.topbar{ background:#dcfce7; color:#065f46; font-weight:600; }
-.topbar-row{ display:flex; align-items:center; gap:10px; padding:6px 0; flex-wrap:wrap; justify-content:center; }
 .topbar .tel{
   display:inline-flex; align-items:center; gap:8px;
   background:#22c55e; color:#fff; text-decoration:none;
@@ -177,32 +100,52 @@ body{
   white-space:nowrap;
 }
 
-
-
-
-
-/* Grid y botones del menú de categorías móvil */
-.cat-grid{
-  display:grid; gap:10px;
-  grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+/* WhatsApp strip (opcional) */
+.whatsapp-strip{ background:#dff8e8; padding:8px 12px; display:flex; justify-content:center }
+.wa-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 14px; background:#19b15a; color:#fff;
+  border-radius:999px; border:2px solid #0d6b37; font-weight:700;
 }
-.cat-button{
-  display:flex; align-items:center; justify-content:center;
-  text-decoration:none; color:var(--text);
-  background:#fff; border:1px solid #e2e8f0; border-radius:12px;
-  padding:12px; font-weight:700;
-  box-shadow:var(--shadow);
+.wa-dot{ width:10px; height:10px; border-radius:50%; background:#fff }
+
+.site-header .header-inner{
+  background:#10a4ea; color:#fff;
+  display:flex; align-items:center; gap:16px;
+  padding:12px 16px; flex-wrap:wrap;
 }
-.cat-button:hover{ filter:brightness(.98); }
+.brand{ display:flex; align-items:center; color:#fff; text-decoration:none }
+.brand-title{ font-weight:800; letter-spacing:.5px }
+.brand-subtitle{ opacity:.9; font-size:12px; display:block; margin-top:2px }
 
+.main-nav{ display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin-left:auto }
+.nav-link{ color:#e9f8ff; text-decoration:none; font-weight:600 }
+.nav-link.active{ text-decoration:underline }
 
-
-/* Oculta bloques de escritorio en mobile */
-@media (max-width:820px){
-  .desktop-only{ display:none !important; }
+.support-btn{
+  background:#fff; color:#0a7ab8; font-weight:700; border:none;
+  border-radius:999px; padding:8px 14px; cursor:pointer;
 }
 
-/* Menú de categorías del sheet (mobile) */
+/* =========================
+   BOTONES
+   ========================= */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:8px; padding:10px 16px; border-radius:10px;
+  font-weight:600; border:0; cursor:pointer;
+  background:#f7f8fb; color:#111; box-shadow:var(--shadow);
+}
+.btn--primary{ background:#12a8e0; color:#fff }
+.btn--link{ background:transparent; color:#12a8e0; text-decoration:underline }
+.btn--whatsapp{ background:#25D366; color:#fff }
+.btn-primary{ background:#0aa1dd; border-color:#0aa1dd; color:#fff } /* alias */
+
+.btn:hover{ filter:brightness(.98) }
+
+/* =========================
+   CATEGORÍAS (sheet / grilla)
+   ========================= */
 .cat-grid{
   display:grid; gap:10px;
   grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
@@ -213,92 +156,203 @@ body{
   background:#fff; border:1px solid #e2e8f0; border-radius:12px;
   padding:12px; font-weight:700; box-shadow:var(--shadow);
 }
-.cat-button:hover{ filter:brightness(.98); }
+.cat-button:hover{ filter:brightness(.98) }
 
-
-
-
-
-/* ===== Header limpio y responsive ===== */
-.site-header {
-  background: #0ea5e9; /* celeste */
-  color: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 30;
+/* =========================
+   GRILLA DE PRODUCTOS
+   ========================= */
+.grid.grid--products{
+  display:grid;
+  gap:16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
 
-.header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
+/* =========================
+   CARDS DE PRODUCTO
+   ========================= */
+.card{
+  display:grid; gap:8px; border-radius:12px;
+  background:#fff; padding:12px; box-shadow:0 2px 8px rgba(0,0,0,.05);
 }
 
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: inherit;
-  white-space: nowrap;
+/* Card específica de producto */
+.card.product-card{
+  display:flex; flex-direction:column; border-radius:12px;
+  background:#fff; box-shadow:0 10px 25px rgba(2,17,37,.08); overflow:hidden;
+}
+.card__thumb{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  width:100%;
+  /* la altura efectiva la define el <img> inline desde ProductImage (height: 220/160/80...) */
+  height:auto;
+  padding:0;
+  background:#fff; border-radius:12px; overflow:hidden;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.03);
+}
+.card__thumb img{
+  width:100%; height:100%;
+  object-fit:cover; /* cards: look e-commerce */
+  display:block;
 }
 
-.brand-title {
-  font-weight: 800;
-  letter-spacing: .4px;
+.card__body{ padding:12px; display:flex; flex-direction:column; gap:6px }
+.card__title{ font-weight:700; color:#111; text-decoration:none; display:block; }
+.card__rating{ color:#ffb703; letter-spacing:2px }
+.card__price{ font-weight:800; color:#ff4d4f }
+
+.badge--featured{
+  position:absolute; top:8px; left:8px;
+  background:#ffb800; color:#111; padding:4px 8px;
+  border-radius:999px; font-size:12px; font-weight:600;
 }
 
-.brand-subtitle {
-  display: block;
-  font-size: 12px;
-  opacity: .9;
+/* =========================
+   PÁGINA DE DETALLE
+   ========================= */
+.product-detail{
+  display:grid; gap:24px; align-items:start;
+  grid-template-columns: minmax(240px,420px) 1fr; /* imagen a la izquierda */
+}
+@media (max-width:900px){
+  .product-detail{ grid-template-columns: 1fr }
 }
 
-.main-nav {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-left: auto;      /* empuja el menú a la derecha */
-  flex-wrap: wrap;
+.product-detail__image{
+  width:100%;
+  aspect-ratio: 4 / 3;
+  background:#fff; border-radius:12px; overflow:hidden;
+  display:grid; place-items:center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+}
+.product-detail__image img{
+  width:100%; height:100%;
+  object-fit:contain; /* en detalle, mostrar entero */
+  display:block;
 }
 
-.main-nav .nav-link,
-.main-nav a {
-  color: #e6f7ff;
-  text-decoration: none;
-  padding: 6px 10px;
-  border-radius: 8px;
-  line-height: 1;
+.product-detail__body{
+  display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:32px;
+}
+@media (max-width:990px){
+  .product-detail__body{ grid-template-columns:1fr }
 }
 
-.main-nav .nav-link:hover,
-.main-nav a:hover {
-  background: rgba(255,255,255,.18);
+.product-hero__title{ margin:0 0 8px; font-size:28px; line-height:1.2 }
+.product-hero__meta{ color:#f39c12; font-size:18px; margin-bottom:8px }
+.product-hero__price{ font-size:28px; font-weight:800; margin:6px 0 16px }
+.product-hero__actions{ display:flex; flex-wrap:wrap; gap:12px }
+
+/* CTA fija inferior (móvil) para detalle */
+.pd-cta{
+  position:fixed; left:0; right:0; bottom:0; z-index:75; background:#fff;
+  box-shadow:0 -10px 30px rgba(0,0,0,.15);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  display:flex; gap:10px;
+}
+.pd-cta .btn{ flex:1 }
+@media (min-width:821px){ .pd-cta{ display:none } }
+
+/* =========================
+   FEATURED LIST / SIDEBAR
+   ========================= */
+/* (Usan ProductImage con height distinto en cada contexto; no requieren CSS extra) */
+
+/* =========================
+   TAB BAR (MÓVIL)
+   ========================= */
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  display:grid; grid-template-columns:repeat(4,1fr); align-items:center; gap:4px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:#fff; border-top:1px solid rgba(0,0,0,.08);
+  box-shadow:0 -6px 20px rgba(0,0,0,.06);
+}
+.tabbar__btn{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-size:12px; line-height:1; padding:6px 4px; border-radius:12px;
+  background:transparent; border:0; color:#222; text-decoration:none;
+}
+.tabbar__btn:active{ background:rgba(0,0,0,.05) }
+
+/* Para evitar solapamiento del contenido con la tabbar */
+.site-content{ padding-bottom:76px }
+
+/* Mostrar tabbar sólo en pantallas chicas */
+@media (min-width:992px){
+  .tabbar{ display:none!important }
+  .site-content{ padding-bottom:0 }
 }
 
-.main-nav .nav-link.active {
-  background: rgba(0,0,0,.14);
+/* =========================
+   SHEET / MODAL
+   ========================= */
+.modal-backdrop, .sheet-backdrop{
+  position:fixed; inset:0; background:rgba(2,17,37,.35); z-index:60;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal{
+  background:#fff; border-radius:16px; padding:16px;
+  max-width:420px; width:calc(100% - 32px);
+}
+.modal-actions{ display:flex; gap:8px; margin-top:12px }
+
+.sheet{
+  position:fixed; inset:0; z-index:60; pointer-events:none;
+  background:rgba(0,0,0,0); transition:background .2s ease;
+}
+.sheet--open{ pointer-events:auto; background:rgba(0,0,0,.35) }
+.sheet__body{
+  position:absolute; left:0; right:0;
+  bottom:calc(8px + env(safe-area-inset-bottom));
+  margin:0 auto; width:min(720px, 100% - 16px);
+  background:#fff; border-radius:16px; padding:12px;
+  transform:translateY(24px); transition:transform .2s ease;
+}
+.sheet--open .sheet__body{ transform:translateY(0) }
+.sheet__handle{ width:38px; height:4px; background:rgba(0,0,0,.15); border-radius:999px; margin:6px auto 10px }
+.sheet__title{ font-weight:700; font-size:16px; margin:0 4px 8px }
+.sheet__list{ list-style:none; padding:0; margin:0; max-height:45vh; overflow:auto }
+.sheet__item{
+  display:block; width:100%; text-align:left;
+  padding:12px 10px; border-radius:10px;
+  background:#f6f7f8; border:1px solid transparent; font-size:15px;
+  margin:6px 4px;
+}
+.sheet__item:hover{ background:#eef2ff; border-color:#c7d2fe }
+.sheet__close{
+  display:block; margin:12px auto 4px;
+  padding:8px 14px; border-radius:10px;
+  border:1px solid rgba(0,0,0,.08); background:#fff;
 }
 
-.support-btn {
-  background: #fff;
-  color: #0ea5e9 !important;
-  padding: 6px 10px;
-  border-radius: 10px;
-  font-weight: 600;
+/* =========================
+   FOOTER
+   ========================= */
+.site-footer{ background:#0b1220; color:#fff }
+.site-footer a{ color:#cdeafe; text-decoration:none }
+@media (max-width:820px){
+  .site-footer{ padding-bottom:84px } /* espacio para la tabbar */
 }
 
-/* Mobile: apilamos un poco */
-@media (max-width: 720px) {
-  .header-inner {
-    flex-wrap: wrap;
-    gap: 10px 12px;
-  }
-  .main-nav {
-    width: 100%;
-    justify-content: space-between;
-  }
+/* =========================
+   FAB WHATSAPP
+   ========================= */
+.wa-fab{
+  position:fixed; right:16px; bottom:80px; z-index:80;
+  width:56px; height:56px; border-radius:50%;
+  background:#25D366; color:#fff; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 30px rgba(0,0,0,.16); text-decoration:none; font-size:24px;
 }
+/* Ocultamos FAB en mobile para no chocar con la tabbar */
+@media (max-width:820px){ .wa-fab{ display:none } }
+
+/* =========================
+   OVERRIDES FINALES (mantener al final)
+   ========================= */
+/* Cards: caja e imagen consistentes con ProductImage (cover) */
+.card__thumb{ height:auto; padding:0 }
+.card__thumb img{ width:100%; height:100%; object-fit:cover }
+
+/* Detalle: imagen “contain” para ver producto completo */
+.product-detail__image img{ object-fit:contain }

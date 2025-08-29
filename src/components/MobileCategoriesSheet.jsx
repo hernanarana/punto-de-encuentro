@@ -1,49 +1,55 @@
 // src/components/MobileCategoriesSheet.jsx
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const CATS = [
-  "Indumentaria",
-  "Ferretería",
-  "Tecnología",
-  "Hogar",
-  "Electrodomésticos",
-  "Herramientas",
-  "Jardinería",
-  "Ofertas",
-];
+/**
+ * Bottom-sheet de categorías para MOBILE.
+ * Se abre con: window.dispatchEvent(new CustomEvent("open-categories"))
+ * Se cierra con: window.dispatchEvent(new CustomEvent("close-categories"))
+ */
+export default function MobileCategoriesSheet() {
+  const [open, setOpen] = useState(false);
 
-const toSlug = (s="") =>
-  s.toLowerCase()
-   .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-   .replace(/[^a-z0-9]+/g,"-")
-   .replace(/(^-|-$)/g,"");
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    const onClose = () => setOpen(false);
+    window.addEventListener("open-categories", onOpen);
+    window.addEventListener("close-categories", onClose);
+    return () => {
+      window.removeEventListener("open-categories", onOpen);
+      window.removeEventListener("close-categories", onClose);
+    };
+  }, []);
 
-export default function MobileCategoriesSheet({ open, onClose }) {
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e)=>e.stopPropagation()}>
-        <div style={{display:"flex", alignItems:"center", marginBottom:8}}>
-          <h3 style={{margin:0}}>Categorías</h3>
-          <button
-            onClick={onClose}
-            style={{marginLeft:"auto", border:"none", background:"transparent", fontSize:22, cursor:"pointer"}}
-          >×</button>
+    <div
+      className="sheet sheet--open"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Categorías"
+      onClick={() => setOpen(false)}
+    >
+      <div className="sheet__body" onClick={(e) => e.stopPropagation()}>
+        <div className="sheet__handle" />
+        <h3 className="sheet__title">Categorías</h3>
+
+        {/* OJO: esta grilla usa las reglas .sheet__list de tu CSS */}
+        <div className="sheet__list">
+          <Link to="/categoria/indumentaria">Indumentaria</Link>
+          <Link to="/categoria/ferreteria">Ferretería</Link>
+          <Link to="/categoria/tecnologia">Tecnología</Link>
+          <Link to="/categoria/hogar">Hogar</Link>
+          <Link to="/categoria/electrodomesticos">Electrodomésticos</Link>
+          <Link to="/categoria/herramientas">Herramientas</Link>
+          <Link to="/categoria/jardineria">Jardinería</Link>
+          <Link to="/categoria/ofertas">Ofertas</Link>
         </div>
 
-        <div className="cat-grid">
-          {CATS.map(c => (
-            <Link
-              key={c}
-              to={`/categoria/${toSlug(c)}`}
-              onClick={onClose}
-              className="cat-button"
-            >
-              {c}
-            </Link>
-          ))}
-        </div>
+        <button className="sheet__close" onClick={() => setOpen(false)}>
+          Cerrar
+        </button>
       </div>
     </div>
   );

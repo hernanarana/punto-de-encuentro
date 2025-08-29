@@ -1,0 +1,545 @@
+/* =========================
+   VARIABLES & BASE
+   ========================= */
+:root{
+  --primary:#0ea5e9;
+  --bg:#f6f8fb;
+  --text:#0f172a;
+  --muted:#64748b;
+  --card:#ffffff;
+  --shadow:0 6px 20px rgba(0,0,0,.06);
+
+  /* Brand font (Poppins via index.html) */
+  --brand-font: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+*{ box-sizing:border-box }
+html,body,#root{ height:100% }
+html, body, #root { overflow-x: hidden; } /* evita scroll lateral en mobile */
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:var(--bg);
+}
+
+img{ max-width:100%; height:auto; display:block }
+.ul-clean{ list-style:none; padding:0; margin:0 }
+
+/* =========================
+   CONTAINER / CENTRADO
+   ========================= */
+.container{ max-width:1200px; margin:0 auto; padding:16px }
+@media (max-width:820px){
+  .container{ padding:12px 12px calc(12px + 84px) } /* espacio para tabbar */
+}
+/* centra cabecera y área de contenido si no están dentro de .container */
+.header-inner, .site-content{ max-width:1200px; margin-left:auto; margin-right:auto }
+
+/* =========================
+   VISIBILIDAD
+   ========================= */
+.mobile-only{ display:none }
+.desktop-only{ display:block }
+@media (max-width:990px){
+  .mobile-only{ display:block }
+  .desktop-only{ display:none }
+}
+
+/* =========================
+   GRILLA PRINCIPAL
+   (Filtros | Centro | Destacados)
+   ========================= */
+.layout-grid{
+  display:grid;
+  gap:16px;
+  grid-template-columns:270px minmax(0,1fr) 300px; /* minmax(0,1fr) evita desbordes del centro */
+}
+@media (max-width:1200px){
+  .layout-grid{ grid-template-columns:250px minmax(0,1fr) 300px }
+}
+@media (max-width:990px){
+  .layout-grid{ grid-template-columns:1fr } /* mobile: una sola columna */
+}
+
+/* =========================
+   BARRA STICKY (mobile)
+   ========================= */
+.mobile-stickybar{
+  position:sticky; top:64px; z-index:25;
+  display:flex; gap:8px; padding:8px;
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(8px);
+  border-radius:12px; margin-bottom:8px;
+}
+
+/* =========================
+   CHIPS (filtros activos)
+   ========================= */
+.chips{ display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 12px }
+.chip{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; background:#f2f5f9;
+  border:1px solid #e7ecf3; border-radius:999px; font-size:13px
+}
+.chip button{ all:unset; cursor:pointer; font-weight:700 }
+
+/* =========================
+   HEADER / TOP BAR
+   ========================= */
+.whatsapp-strip{ background:#dff8e8; padding:8px 12px; display:flex; justify-content:center }
+.wa-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 14px; background:#19b15a; color:#fff;
+  border-radius:999px; border:2px solid #0d6b37; font-weight:700
+}
+.wa-dot{ width:10px; height:10px; border-radius:50%; background:#fff }
+
+.site-header .header-inner{
+  background:#10a4ea; color:#fff;
+  display:flex; align-items:center; gap:16px;
+  padding:12px 16px; flex-wrap:wrap;
+}
+.brand{ display:flex; align-items:center; color:#fff; text-decoration:none }
+.brand-title{
+  font-family:var(--brand-font);
+  font-weight:900; letter-spacing:.5px; line-height:1.1; display:inline-block
+}
+.brand-subtitle{
+  font-family:var(--brand-font);
+  font-weight:700; opacity:.9; font-size:12px; display:block; margin-top:2px
+}
+
+.main-nav{ display:flex; flex-wrap:wrap; gap:18px; align-items:center; margin-left:auto }
+.nav-link{ color:#e9f8ff; text-decoration:none; font-weight:600 }
+.nav-link.active{ text-decoration:underline }
+
+.support-btn{
+  background:#fff; color:#0a7ab8; font-weight:700; border:none;
+  border-radius:999px; padding:8px 14px; cursor:pointer;
+}
+/* Ocultar menú superior en mobile (dejamos tabbar + sheet) */
+@media (max-width:820px){
+  .main-nav, .support-btn{ display:none !important; }
+}
+
+/* =========================
+   BOTONES
+   ========================= */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:8px; padding:10px 16px; border-radius:10px;
+  font-weight:600; border:0; cursor:pointer;
+  background:#f7f8fb; color:#111; box-shadow:var(--shadow);
+}
+.btn--primary{ background:#12a8e0; color:#fff }
+.btn--link{ background:transparent; color:#12a8e0; text-decoration:underline }
+.btn--whatsapp{ background:#25D366; color:#fff }
+.btn-primary{ background:#0aa1dd; border-color:#0aa1dd; color:#fff } /* alias */
+.btn:hover{ filter:brightness(.98) }
+
+/* =========================
+   CATEGORÍAS (bottom sheet)
+   ========================= */
+/* Soportá ambos: .sheet-grid (tu JSX actual) y .sheet__list (por si lo cambiás) */
+.sheet-grid,
+.sheet__list{
+  list-style:none;
+  margin:0;
+  padding:4px;
+  display:grid;
+  gap:10px;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas en móviles comunes */
+}
+@media (max-width:375px){
+  .sheet-grid,
+  .sheet__list{ grid-template-columns: repeat(3, 1fr); } /* 3 col en pantallas chicas */
+}
+.sheet-grid a,
+.sheet__list a{
+  display:block;
+  text-align:center;
+  padding:12px 10px;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  text-decoration:none;
+  color:#0f172a;
+  font-weight:700;
+  line-height:1.15;
+  white-space:normal;          /* evita desbordes (Electrodomésticos) */
+  word-break:break-word;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+/* =========================
+   GRID DE PRODUCTOS (centro)
+   ========================= */
+.grid.grid--products{
+  display:grid;
+  gap:16px;
+  /* auto-fit + minmax evita empujes y ajusta 2–3 columnas según ancho real */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+@media (max-width:640px){
+  .grid.grid--products{ grid-template-columns:1fr } /* mobile: una columna */
+}
+
+/* =========================
+   CARDS DE PRODUCTO
+   ========================= */
+.card{
+  display:grid; gap:8px; border-radius:12px; background:#fff; padding:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.card.product-card{
+  display:flex; flex-direction:column; border-radius:12px; background:#fff;
+  box-shadow:0 10px 25px rgba(2,17,37,.08); overflow:hidden;
+}
+.card__thumb{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  width:100%; height:auto; padding:0;
+  background:#fff; border-radius:12px; overflow:hidden;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.03);
+}
+.card__thumb img{ width:100%; height:100%; object-fit:cover; display:block } /* recorte tipo e-commerce */
+.card__body{ padding:12px; display:flex; flex-direction:column; gap:6px }
+.card__title{ font-weight:700; color:#111; text-decoration:none; display:block }
+.card__rating{ color:#ffb703; letter-spacing:2px }
+.card__price{ font-weight:800; color:#ff4d4f }
+.badge--featured{
+  position:absolute; top:8px; left:8px;
+  background:#ffb800; color:#111; padding:4px 8px;
+  border-radius:999px; font-size:12px; font-weight:600;
+}
+
+/* =========================
+   DETALLE (modo MercadoLibre)
+   ========================= */
+.product-hero{
+  display:grid; gap:24px; align-items:start;
+  grid-template-columns: minmax(260px, 420px) 1fr 300px;
+}
+@media (max-width:960px){ .product-hero{ grid-template-columns:1fr } }
+
+/* Media box + imagen principal chica (4:3) */
+.product-hero__media{
+  background:#fff; border-radius:12px; border:1px solid #e7ecf3;
+  padding:12px; box-shadow:0 6px 20px rgba(0,0,0,.04);
+}
+.product-hero__media .product-detail__image{
+  aspect-ratio:4 / 3; background:#fff; border-radius:12px;
+  display:grid; place-items:center; overflow:hidden;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  max-height:360px; /* clave para que no sea gigante */
+}
+.product-hero__media .product-detail__image img{ max-width:100%; max-height:100%; object-fit:contain }
+
+/* Thumbs */
+.pd-thumbs{ display:flex; gap:8px; margin-top:12px; overflow-x:auto; padding-bottom:4px }
+.pd-thumb{
+  width:80px; height:80px; border-radius:8px; cursor:pointer;
+  border:1px solid #e2e8f0; background:#f7f8fb
+}
+.pd-thumb img{ width:100%; height:100%; object-fit:cover; display:block }
+
+/* Info */
+.product-hero__title{ margin:0 0 8px; font-size:28px; line-height:1.2 }
+.product-hero__meta{ color:#f39c12; font-size:18px; margin-bottom:8px }
+.product-hero__price{ font-size:28px; font-weight:800; margin:6px 0 16px }
+.product-hero__actions{ display:flex; flex-wrap:wrap; gap:12px }
+
+/* Aside (beneficios) */
+.pd-aside{ display:grid; gap:12px; position:sticky; top:96px; align-self:start }
+.pd-card{ background:#fff; border-radius:12px; border:1px solid #e7ecf3; padding:12px; box-shadow:0 6px 20px rgba(0,0,0,.04) }
+.pd-card h4{ margin:0 0 6px; font-size:14px }
+.pd-badge{ display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:700 }
+.pd-badge--off{ background:#ffefe6; color:#c2410c }
+.pd-badge--envio{ background:#e8f6ee; color:#0a7a3f }
+.pd-badge--cuotas{ background:#eaf2ff; color:#0a55cc }
+
+/* Sección inferior (desc + features) */
+.product-detail__body{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:32px }
+@media (max-width:990px){ .product-detail__body{ grid-template-columns:1fr } }
+
+/* CTA fija inferior (mobile) */
+.pd-cta{
+  position:fixed; left:0; right:0; bottom:0; z-index:75; background:#fff;
+  box-shadow:0 -10px 30px rgba(0,0,0,.15);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  display:flex; gap:10px;
+}
+.pd-cta .btn{ flex:1 }
+@media (min-width:821px){ .pd-cta{ display:none } }
+
+/* =========================
+   TAB BAR (MÓVIL)
+   ========================= */
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:50;
+  display:grid; grid-template-columns:repeat(4,1fr); align-items:center; gap:4px;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:#fff; border-top:1px solid rgba(0,0,0,.08);
+  box-shadow:0 -6px 20px rgba(0,0,0,.06);
+}
+.tabbar__btn{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-size:12px; line-height:1; padding:6px 4px; border-radius:12px;
+  background:transparent; border:0; color:#222; text-decoration:none;
+}
+.tabbar__btn:active{ background:rgba(0,0,0,.05) }
+/* Para que el contenido no quede tapado por la tabbar */
+.site-content{ padding-bottom:84px }
+@media (min-width:992px){ .tabbar{ display:none!important } .site-content{ padding-bottom:0 } }
+
+/* =========================
+   SHEET / MODAL
+   ========================= */
+.modal-backdrop, .sheet-backdrop{
+  position:fixed; inset:0; background:rgba(2,17,37,.35); z-index:90;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal{
+  background:#fff; border-radius:16px; padding:16px;
+  max-width:420px; width:calc(100% - 32px);
+}
+.modal-actions{ display:flex; gap:8px; margin-top:12px }
+
+.sheet{
+  position:fixed; inset:0; z-index:100; pointer-events:none;
+  background:rgba(0,0,0,0); transition:background .2s ease;
+}
+.sheet--open{ pointer-events:auto; background:rgba(0,0,0,.35) }
+.sheet__body{
+  position:absolute; left:0; right:0;
+  bottom:calc(8px + env(safe-area-inset-bottom));
+  margin:0 auto; width:min(560px, 100% - 16px);  /* centrado y controlado */
+  background:#fff; border-radius:16px; padding:12px;
+  transform:translateY(24px); transition:transform .2s ease;
+}
+.sheet--open .sheet__body{ transform:translateY(0) }
+.sheet__handle{ width:38px; height:4px; background:rgba(0,0,0,.15); border-radius:999px; margin:6px auto 10px }
+.sheet__title{ font-weight:700; font-size:16px; margin:0 4px 8px; text-align:center }
+.sheet__close{
+  display:block; margin:12px auto 4px; padding:8px 14px;
+  border-radius:10px; border:1px solid rgba(0,0,0,.08); background:#fff;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+.site-footer{ background:#0b1220; color:#fff }
+.site-footer a{ color:#cdeafe; text-decoration:none }
+@media (max-width:820px){ .site-footer{ padding-bottom:84px } }
+
+/* =========================
+   FAB WHATSAPP
+   ========================= */
+.wa-fab{
+  position:fixed; right:16px; bottom:80px; z-index:80;
+  width:56px; height:56px; border-radius:50%;
+  background:#25D366; color:#fff; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 30px rgba(0,0,0,.16); text-decoration:none; font-size:24px;
+}
+@media (max-width:820px){ .wa-fab{ display:none } }
+
+/* =========================
+   DESTACADOS (ASIDE FIJO)
+   ========================= */
+.featured-aside{
+  position: sticky;
+  top: 96px;               /* despega del header */
+  align-self: start;
+  max-height: calc(100vh - 120px);  /* si hay muchos, hace scroll */
+  overflow: auto;
+  padding-right: 4px;      /* respirito p/scrollbar */
+}
+.featured-title{ margin:0 0 8px; font-weight:800 }
+.featured-list{
+  list-style:none; margin:0; padding:0;
+  display:grid; gap:12px;
+}
+.featured-card{
+  display:grid; grid-template-columns:80px 1fr; gap:12px; align-items:center;
+  text-decoration:none; color:#111; background:#fff;
+  border-radius:12px; border:1px solid #e7ecf3; box-shadow:0 6px 20px rgba(0,0,0,.06);
+  padding:10px;
+}
+.featured-thumb{ width:80px; height:80px; border-radius:8px; overflow:hidden; background:#f7f8fb }
+.featured-thumb img{ width:100%; height:100%; object-fit:cover; display:block }
+.featured-info{ display:grid; gap:4px; min-width:0 }
+.featured-name{
+  font-weight:600; line-height:1.2;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.featured-price{ color:#ff4d4f; font-weight:800 }
+/* Scrollbar suave (opcional) */
+.featured-aside::-webkit-scrollbar{ width:8px }
+.featured-aside::-webkit-scrollbar-thumb{ background:rgba(0,0,0,.15); border-radius:999px }
+
+
+
+.topbar{ background:#dcfce7; color:#065f46; }
+.topbar-row{
+  display:flex; align-items:center; gap:10px;
+  padding:6px 0; justify-content:center;
+}
+.topbar-logo{
+  width:28px; height:28px; border-radius:8px; display:block;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.tel{
+  display:inline-flex; align-items:center; gap:8px;
+  background:#22c55e; color:#fff; text-decoration:none;
+  padding:6px 10px; border-radius:999px; box-shadow:0 6px 20px rgba(0,0,0,.06);
+  white-space:nowrap; font-weight:700;
+}
+
+
+
+/* ===== Tabbar visible en mobile (ya la tenías) ===== */
+.tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:50; }
+/* En desktop se oculta */
+@media (min-width:992px){ .tabbar{ display:none!important } }
+
+/* ===== Sheet por encima de la tabbar ===== */
+.sheet{ z-index:100; }
+.sheet__body{ width:min(560px, 100% - 16px); margin:0 auto; }
+
+/* ===== Grilla de categorías dentro del sheet ===== */
+.sheet__list{
+  display:grid;
+  gap:10px;
+  grid-template-columns:repeat(4,1fr);
+}
+@media (max-width:375px){
+  .sheet__list{ grid-template-columns:repeat(3,1fr); }
+}
+.sheet__list a{
+  display:block;
+  text-align:center;
+  padding:12px 10px;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  text-decoration:none;
+  color:#0f172a;
+  font-weight:700;
+  line-height:1.15;
+  white-space:normal;
+  word-break:break-word;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+/* ===== Botón de WhatsApp de escritorio ===== */
+.wa-icon-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:36px; height:36px; border-radius:999px;
+  background:#25D366;
+  margin-left:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+.wa-icon-btn img{ width:20px; height:20px; display:block; }
+
+
+
+/* ===== Tabbar visible en mobile (ya la tenías) ===== */
+.tabbar{ position:fixed; left:0; right:0; bottom:0; z-index:50; }
+/* En desktop se oculta */
+@media (min-width:992px){ .tabbar{ display:none!important } }
+
+/* ===== Sheet por encima de la tabbar ===== */
+.sheet{ z-index:100; }
+.sheet__body{ width:min(560px, 100% - 16px); margin:0 auto; }
+
+/* ===== Grilla de categorías dentro del sheet ===== */
+.sheet__list{
+  display:grid;
+  gap:10px;
+  grid-template-columns:repeat(4,1fr);
+}
+@media (max-width:375px){
+  .sheet__list{ grid-template-columns:repeat(3,1fr); }
+}
+.sheet__list a{
+  display:block;
+  text-align:center;
+  padding:12px 10px;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  text-decoration:none;
+  color:#0f172a;
+  font-weight:700;
+  line-height:1.15;
+  white-space:normal;
+  word-break:break-word;
+  box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+/* ===== Botón de WhatsApp de escritorio ===== */
+.wa-icon-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:36px; height:36px; border-radius:999px;
+  background:#25D366;
+  margin-left:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+.wa-icon-btn img{ width:20px; height:20px; display:block; }
+
+
+
+
+/* ====== Bottom-sheet de Categorías: mejor tipografía y cortes ====== */
+
+/* 1) Más ancho por celda en móviles para que no “estruje” el texto */
+.sheet__list{
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);   /* default */
+}
+
+/* <= 480px: 3 columnas (más aire) */
+@media (max-width: 480px){
+  .sheet__list{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* <= 360px: 2 columnas (máxima legibilidad) */
+@media (max-width: 360px){
+  .sheet__list{ grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 2) Píldoras: no partir dentro de las palabras, permitir guionado “lindo” */
+.sheet__list a{
+  display: block;
+  text-align: center;
+  padding: 12px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.25;
+  min-height: 56px;              /* altura cómoda para 1–2 líneas */
+  box-shadow: 0 6px 20px rgba(0,0,0,.06);
+
+  /* Cortes de línea civilizados */
+  white-space: normal;           /* permite varias líneas */
+  word-break: normal;            /* NO cortar en cualquier lado */
+  overflow-wrap: normal;         /* evita cortes feos */
+  hyphens: auto;                 /* guionado automático (lang="es" ya lo tenés) */
+
+  /* Opcional (si tu navegador lo soporta):
+     reparte mejor las palabras en 2 líneas */
+  text-wrap: balance;
+}
+
+
+
