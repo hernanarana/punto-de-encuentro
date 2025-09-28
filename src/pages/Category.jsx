@@ -15,7 +15,7 @@ import SearchBar from "../components/SearchBar.jsx";
 const norm = (s = "") =>
   String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
-/* === Categorías fijas para los filtros (ordenadas) === */
+/* === Categorías fijas (ordenadas) === */
 const CATEGORIES_NAV = [
   "Indumentaria",
   "Ferretería",
@@ -85,16 +85,14 @@ const normalizeRange = (minStr, maxStr) => {
   return { min, max };
 };
 
-/* Detección de oferta en crudo (acepta onSale, discountPercent, salePrice o “%” en texto) */
+/* Detección de oferta flexible */
 const isOnOfferRaw = (p = {}) => {
   const price = toNumberPrice(p.price);
   const sale  = toNumberPrice(p.salePrice);
   const hasSalePrice = sale > 0 && sale < price;
 
-  const text = [
-    p.badge, p.label,
-    Array.isArray(p.tags) ? p.tags.join(" ") : ""
-  ].filter(Boolean).join(" ");
+  const text = [p.badge, p.label, Array.isArray(p.tags) ? p.tags.join(" ") : ""]
+    .filter(Boolean).join(" ");
   const m = String(text).match(/(\d{1,2})\s*%/);
   const percentFromText = m ? Number(m[1]) : 0;
 
@@ -109,7 +107,7 @@ const isOnOfferRaw = (p = {}) => {
   return p.onSale === true || discountPercent > 0 || hasSalePrice;
 };
 
-/* ===== StarFilterPro (inline, solo estrellas, sin texto) ===== */
+/* ===== Estrellas ===== */
 function Star({ filled }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -128,13 +126,12 @@ function StarFilterPro({ value, onChange, compact = false }) {
   const cls = (n) => "chip chip--rating " + (current >= n ? "is-active" : "");
   return (
     <div className="rating-filter" role="group" aria-label="Filtrar por estrellas">
-      {[5,4,3,2,1].map((n) => (
+      {[5, 4, 3, 2, 1].map((n) => (
         <button
           key={n}
           type="button"
           className={cls(n)}
           aria-pressed={current >= n}
-          aria-label={`Mostrar productos con ${n} estrellas o más`}
           onClick={() => set(n)}
           data-size={compact ? "sm" : "md"}
           title={`${n} estrellas o más`}
@@ -149,7 +146,6 @@ function StarFilterPro({ value, onChange, compact = false }) {
         className={"chip chip--ghost " + (current === 0 ? "is-active" : "")}
         onClick={() => onChange("")}
         data-size={compact ? "sm" : "md"}
-        title="Todas las valoraciones"
       >
         Todas
       </button>
@@ -157,7 +153,7 @@ function StarFilterPro({ value, onChange, compact = false }) {
   );
 }
 
-/* ====== Portal: filtros dentro del menú mobile ====== */
+/* ====== Portal móvil ====== */
 function useMenuTarget() {
   const [target, setTarget] = useState(null);
   useEffect(() => {
@@ -207,7 +203,6 @@ export default function Category() {
   const isMobile  = useBreakpoint("(max-width: 767px)");
 
   // filtros
-  
   const [q, setQ] = useState("");
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
@@ -254,12 +249,10 @@ export default function Category() {
         }
       }
 
-      // categorías fijas para el panel
       const uniqueCats = CATEGORIES_NAV.slice();
 
       if (!alive) return;
 
-      // normalización
       const normalized = (rows||[]).map((p)=>{
         const priceNum = toNumberPrice(p.price);
         const saleNum  = toNumberPrice(p.salePrice);
@@ -343,7 +336,7 @@ export default function Category() {
       <div className="catalog-layout" style={{display:"grid",gridTemplateColumns:isDesktop?"280px 1fr":"1fr",gap:16,alignItems:"start"}}>
         {/* === SIDEBAR (DESKTOP) === */}
         {isDesktop && (
-          <aside className="filters-card">
+          <aside className="filters-card" style={{position:"sticky",top:84,alignSelf:"start",zIndex:1,height:"fit-content"}}>
             <h3 className="filters-title">
               {slugNorm === "todos" ? "Todos los productos" : (isOffers ? "Ofertas" : title)}
             </h3>
@@ -391,54 +384,92 @@ export default function Category() {
           </aside>
         )}
 
+        {/* === PANEL EN MENÚ (MOBILE) ORDENADO === */}
+        {isMobile && (
+          <MenuPortal>
+            <div className="filter-panel">
+              <div className="fp-head"><div className="fp-title">Filtros</div></div>
+
+              <div className="fp-body">
+                {/* 1) Buscar */}
+                <section className="fp-sec">
+                  <div className="fp-label">Buscar productos</div>
+                  <SearchBar
+                    value={q}
+                    onChange={setQ}
+                    onSubmit={() => {
+                      document.querySelector(".side-menu .close")?.click();
+                      document.querySelector("section[aria-live='polite']")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  />
+                </section>
+
+                {/* 2) Precio */}
+                <section className="fp-sec">
+                  <div className="fp-label">Precio</div>
+                  <div className="fp-row">
+                    <input type="number" placeholder="Mín" value={min} onChange={(e)=>setMin(e.target.value)} />
+                    <input type="number" placeholder="Máx" value={max} onChange={(e)=>setMax(e.target.value)} />
+                  </div>
+                </section>
+
+                {/* 3) Categorías */}
+                <section className="fp-sec">
+                  <div className="fp-label">Categorías</div>
+                  <div className="fp-chips">
+                    <button
+                      className={`fp-chip ${slugNorm==="todos"?"is-active":""}`}
+                      onClick={() => {
+                        navigate("/categoria/todos");
+                        document.querySelector(".side-menu .close")?.click();
+                      }}
+                    >
+                      Todas
+                    </button>
+                    {categories.map((c)=>(
+                      <button
+                        key={c}
+                        className={`fp-chip ${norm(c)===slugNorm?"is-active":""}`}
+                        onClick={() => {
+                          navigate(`/categoria/${toSlug(c)}`);
+                          document.querySelector(".side-menu .close")?.click();
+                        }}
+                        title={c}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                {/* 4) Valoración mínima */}
+                <section className="fp-sec">
+                  <div className="fp-label">Valoración mínima</div>
+                  <StarFilterPro value={rating} onChange={setRating} compact />
+                </section>
+              </div>
+
+              <div className="fp-actions">
+                <button
+                  type="button"
+                  className="fp-apply"
+                  onClick={() => {
+                    document.querySelector(".side-menu .close")?.click();
+                    document.querySelector("section[aria-live='polite']")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  Aplicar
+                </button>
+                <button type="button" className="fp-clear" onClick={clearFilters}>
+                  Limpiar
+                </button>
+              </div>
+            </div>
+          </MenuPortal>
+        )}
+
         {/* === CONTENIDO === */}
         <div>
-          {/* === PANEL EN MENÚ (MOBILE) === */}
-          {isMobile && (
-            <MenuPortal>
-              <div className="filter-panel">
-                <div className="fp-head"><div className="fp-title">Filtros</div></div>
-                <div className="fp-body">
-
-                  <section className="fp-sec">
-                    <div className="fp-label">Buscar productos</div>
-                    <SearchBar value={q} onChange={setQ} onSubmit={() => document.querySelector(".side-menu .close")?.click()} />
-                  </section>
-
-                  <section className="fp-sec">
-                    <div className="fp-label">Precio</div>
-                    <div className="fp-row">
-                      <input type="number" placeholder="Mín" value={min} onChange={(e)=>setMin(e.target.value)} />
-                      <input type="number" placeholder="Máx" value={max} onChange={(e)=>setMax(e.target.value)} />
-                    </div>
-                  </section>
-
-                  <section className="fp-sec">
-                    <div className="fp-label">Estrellas</div>
-                    <StarFilterPro value={rating} onChange={setRating} compact />
-                  </section>
-
-                  <section className="fp-sec">
-                    <div className="fp-label">Categorías</div>
-                    <div className="fp-chips">
-                      <button onClick={()=>goToCategory("todos")} className={`fp-chip ${slugNorm==="todos"?"is-active":""}`}>Todas</button>
-                      {categories.map((c)=>(
-                        <button key={c} onClick={()=>goToCategory(c)} className={`fp-chip ${norm(c)===slugNorm?"is-active":""}`} title={c}>
-                          {c}
-                        </button>
-                      ))}
-                    </div>
-                  </section>
-                </div>
-
-                <div className="fp-actions">
-                  <button type="button" className="fp-apply" onClick={() => document.querySelector(".side-menu .close")?.click()}>Aplicar</button>
-                  <button type="button" className="fp-clear" onClick={clearFilters}>Limpiar</button>
-                </div>
-              </div>
-            </MenuPortal>
-          )}
-
           <h2 style={{ margin: "8px 12px" }}>
             {slugNorm === "todos" ? "Todos los productos" : (isOffers ? "Ofertas" : title)}
           </h2>
@@ -463,20 +494,3 @@ export default function Category() {
     </div>
   );
 }
-
-/* estilos inline reutilizables (solo usados en mobile legacy) */
-const chipStyle = (active) => ({
-  textAlign: "left",
-  padding: "8px 10px",
-  borderRadius: 8,
-  border: active ? "1px solid #22c55e" : "1px solid #334155",
-  background: active ? "#16a34a22" : "#0f172a",
-  color: "#fff",
-  cursor: "pointer",
-});
-const priceInputStyle = {
-  padding: 10, borderRadius: 8, border: "1px solid #334155", background: "#0f172a", color: "#fff",
-};
-const btnGhost = {
-  flex: 1, padding: "10px 12px", borderRadius: 8, border: "1px solid #334155", background: "transparent", color: "#fff", cursor: "pointer",
-};

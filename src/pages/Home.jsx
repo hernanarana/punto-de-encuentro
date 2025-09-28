@@ -25,7 +25,7 @@ const toNumberPrice = (v) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-/* === Categorías fijas para los filtros (ordenadas) === */
+/* === Categorías fijas (ordenadas) === */
 const CATEGORIES_NAV = [
   "Indumentaria",
   "Ferretería",
@@ -192,15 +192,6 @@ export default function Home() {
     setMax("");
     setRating("");
   };
-  const goToCategory = (name) => {
-    navigate(`/categoria/${toSlug(name)}`);
-    document.querySelector(".side-menu .close")?.click(); // cierra menú en mobile
-  };
-  const applyAndClose = () => {
-    document.querySelector(".side-menu .close")?.click(); // cierra menú
-    // opcional: scrollear al grid
-    document.getElementById("home-grid")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   return (
     <div
@@ -224,8 +215,8 @@ export default function Home() {
           <aside
             className="filters-card"
             style={{
-              position: "sticky", // fija al hacer scroll
-              top: 84,            // igual que Category
+              position: "sticky",
+              top: 84,
               alignSelf: "start",
               zIndex: 1,
               height: "fit-content",
@@ -268,8 +259,6 @@ export default function Home() {
             <div className="filters-field">
               <label>Categorías</label>
               <div className="filters-cats">
-                {/* si querés mostrar "Todas" también en Home, descomenta: */}
-                {/* <button onClick={()=>navigate('/categoria/todos')} className="chip chip--cat">Todas</button> */}
                 {categories.map((c) => (
                   <button
                     key={c}
@@ -298,16 +287,22 @@ export default function Home() {
               <div className="fp-head">
                 <div className="fp-title">Filtros</div>
               </div>
+
               <div className="fp-body">
+                {/* 1) Buscar */}
                 <section className="fp-sec">
                   <div className="fp-label">Buscar productos</div>
                   <SearchBar
                     value={q}
                     onChange={setQ}
-                    onSubmit={applyAndClose}
+                    onSubmit={() => {
+                      document.querySelector(".side-menu .close")?.click();
+                      document.getElementById("home-grid")?.scrollIntoView({ behavior: "smooth" });
+                    }}
                   />
                 </section>
 
+                {/* 2) Precio */}
                 <section className="fp-sec">
                   <div className="fp-label">Precio</div>
                   <div className="fp-row">
@@ -326,18 +321,16 @@ export default function Home() {
                   </div>
                 </section>
 
-                <section className="fp-sec">
-                  <div className="fp-label">Valoración mínima</div>
-                  <StarFilterPro value={rating} onChange={setRating} compact />
-                </section>
-
+                {/* 3) Categorías */}
                 <section className="fp-sec">
                   <div className="fp-label">Categorías</div>
                   <div className="fp-chips">
-                    {/* Ir a “Todas” desde menú móvil */}
                     <button
                       className="fp-chip"
-                      onClick={() => goToCategory("todos")}
+                      onClick={() => {
+                        navigate("/categoria/todos");
+                        document.querySelector(".side-menu .close")?.click();
+                      }}
                     >
                       Todas
                     </button>
@@ -345,7 +338,10 @@ export default function Home() {
                       <button
                         key={c}
                         className="fp-chip"
-                        onClick={() => goToCategory(c)}
+                        onClick={() => {
+                          navigate(`/categoria/${toSlug(c)}`);
+                          document.querySelector(".side-menu .close")?.click();
+                        }}
                         title={c}
                       >
                         {c}
@@ -353,10 +349,23 @@ export default function Home() {
                     ))}
                   </div>
                 </section>
+
+                {/* 4) Valoración mínima (opcional) */}
+                <section className="fp-sec">
+                  <div className="fp-label">Valoración mínima</div>
+                  <StarFilterPro value={rating} onChange={setRating} compact />
+                </section>
               </div>
 
               <div className="fp-actions">
-                <button type="button" className="fp-apply" onClick={applyAndClose}>
+                <button
+                  type="button"
+                  className="fp-apply"
+                  onClick={() => {
+                    document.querySelector(".side-menu .close")?.click();
+                    document.getElementById("home-grid")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
                   Aplicar
                 </button>
                 <button type="button" className="fp-clear" onClick={clear}>
