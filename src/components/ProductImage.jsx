@@ -1,28 +1,33 @@
-// src/components/ProductImage.jsx
-import { useState, useMemo } from "react";
-import { assetOrUrl } from "../utils/asset";
+import React from "react";
 
-export default function ProductImage({ product, src, alt = "", ...imgProps }) {
-  const [err, setErr] = useState(false);
-
-  const computed = useMemo(() => {
-    const s =
-      src ||
-      product?.image ||
-      (Array.isArray(product?.images) ? product.images[0] : null) ||
-      "productos/placeholder.jpg";
-    return assetOrUrl(s);
-  }, [src, product]);
-
-  const finalSrc = err ? "/productos/placeholder.jpg" : computed;
+export default function ProductImage({
+  src,
+  alt = "",
+  height = 220,
+  contain = false, // true en detalle, false en cards
+}) {
+  const fallback = "/productos/placeholder.jpg";
 
   return (
-    <img
-      src={finalSrc}
-      alt={alt}
-      loading="lazy"
-      onError={() => setErr(true)}
-      {...imgProps}
-    />
+    <div className="card__thumb" style={{ height }}>
+      <img
+        src={src || fallback}
+        alt={alt}
+        loading="lazy"
+        onError={(e) => {
+          // evita loop
+          const url = new URL(e.currentTarget.src);
+          if (!url.pathname.endsWith("placeholder.jpg")) {
+            e.currentTarget.src = fallback;
+          }
+        }}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: contain ? "contain" : "cover",
+          display: "block",
+        }}
+      />
+    </div>
   );
 }

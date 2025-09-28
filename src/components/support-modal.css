@@ -1,0 +1,18 @@
+/* src/components/support-modal.css */
+.sheet-backdrop{
+  position:fixed; inset:0; background:rgba(2,17,37,.35); z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+}
+.sheet__body{
+  background:#fff; border-radius:16px; padding:16px;
+  width:min(600px, calc(100% - 32px));
+  box-shadow:0 14px 40px rgba(0,0,0,.28);
+}
+.sheet__handle{ width:42px; height:5px; background:rgba(0,0,0,.15); border-radius:999px; margin:6px auto 10px }
+.sheet__title{ margin:0 0 10px; text-align:center; font-size:20px; font-weight:900 }
+.support-block .actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px }
+.sheet__close{
+  margin:14px auto 4px; padding:10px 16px; display:block;
+  border-radius:10px; border:1px solid rgba(0,0,0,.08); background:#fff; cursor:pointer;
+}
+.muted{ color:#64748b }

@@ -1,191 +1,182 @@
 // src/pages/ProductDetail.jsx
-import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import PRODUCTS from "../data/products.js";
-import { assetOrUrl } from "../utils/asset.js";
+import { useEffect, useMemo, useState, useRef } from "react";
+import { useParams, Link } from "react-router-dom";
+import { fetchProductBySlugOrId } from "../data/firestoreProducts.js";
+import "./ProductDetail.css"; // asegúrate de tenerlo importado
 
 export default function ProductDetail() {
   const { id } = useParams();
 
-  // Busca por id o por slug (por si más adelante usás slugs)
-  const product = useMemo(() => {
-    return PRODUCTS.find(
-      (p) => String(p.id) === String(id) || String(p.slug) === String(id)
-    );
+  const [prod, setProd] = useState(null);
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const [active, setActive] = useState(0);
+  const [zoom, setZoom] = useState(false);
+  const [zoomOrigin, setZoomOrigin] = useState("50% 50%");
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setErr("");
+    setProd(null);
+    setActive(0);
+    setZoom(false);
+
+    fetchProductBySlugOrId(id)
+      .then((p) => alive && setProd(p))
+      .catch((e) => alive && setErr(e.message || "Producto no encontrado"))
+      .finally(() => alive && setLoading(false));
+
+    return () => { alive = false; };
   }, [id]);
 
-  if (!product) {
+  const images = useMemo(() => {
+    if (!prod) return [];
+    const arr = Array.isArray(prod.images) && prod.images.length ? prod.images : [prod.image].filter(Boolean);
+    return [...new Set(arr.filter(Boolean))];
+  }, [prod]);
+
+  const priceAR = (n) =>
+    typeof n === "number"
+      ? n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 })
+      : n;
+
+  // —— Zoom handling (transform-origin hacia el cursor)
+  const onMove = (e) => {
+    if (!zoom || !mainRef.current) return;
+    const rect = mainRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomOrigin(`${x}% ${y}%`);
+  };
+
+  const onKey = (e) => {
+    if (!images.length) return;
+    if (e.key === "ArrowRight") setActive((i) => (i + 1) % images.length);
+    if (e.key === "ArrowLeft") setActive((i) => (i - 1 + images.length) % images.length);
+    if (e.key === "Escape") { setZoom(false); setLightboxOpen(false); }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [images.length]);
+
+  if (loading) return <main className="pd-wrap">Cargando…</main>;
+  if (err) {
     return (
-      <div className="container">
-        <p style={{ margin: "24px 0" }}>
-          Producto no encontrado.{" "}
-          <Link to="/" className="btn btn--link">
-            Volver al inicio
-          </Link>
-        </p>
-      </div>
+      <main className="pd-wrap" style={{ color: "#f87171" }}>
+        Error: {err} — <Link to="/" className="pd-link">Volver</Link>
+      </main>
     );
   }
-
-  // Normalizo imágenes: si hay array uso ese; si no, uso image; si no, placeholder
-  const images = (product.images && product.images.length
-    ? product.images
-    : [product.image || "productos/placeholder.jpg"]
-  ).map((src) => assetOrUrl(src));
-
-  const [idx, setIdx] = useState(0);
-  const mainImg = images[Math.min(idx, images.length - 1)];
-
-  const price = Number(product.price || 0).toLocaleString("es-AR");
-  const rating = Number(product.rating || 0);
-  const reviews = Number(product.reviews || 0);
+  if (!prod) return null;
 
   return (
-    <div className="container">
-      {/* ---------- Breadcrumb ---------- */}
-      <nav className="breadcrumb" aria-label="breadcrumb">
-        <Link to="/">Inicio</Link> /{" "}
-        <Link to={`/categoria/${product.category || "categoria"}`}>
-          {product.category || "Categoría"}
-        </Link>{" "}
-        / <strong>{product.title}</strong>
-      </nav>
-
-      {/* ---------- Hero (media | info | aside) ---------- */}
-      <section className="product-hero">
-        {/* MEDIA */}
-        <div className="product-hero__media">
-          <div className="product-detail__image">
+    <main className="pd-wrap">
+      <div className="pd-grid">
+        {/* Galería */}
+        <section>
+          <div
+            className={`pd-main ${zoom ? "is-zoomed" : ""}`}
+            ref={mainRef}
+            onMouseMove={onMove}
+            onMouseLeave={() => setZoom(false)}
+          >
             <img
-              src={mainImg}
-              alt={product.title}
-              onError={(e) => {
-                e.currentTarget.src = "/productos/placeholder.jpg";
+              className="pd-mainimg"
+              src={images[active]}
+              alt={prod.title}
+              loading="eager"
+              style={{
+                transform: zoom ? "scale(1.9)" : "scale(1)",
+                transformOrigin: zoomOrigin,
               }}
+              onClick={() => setZoom((z) => !z)}
             />
+            {/* Botón lightbox */}
+            <button className="pd-lightbox-btn" onClick={() => setLightboxOpen(true)} aria-label="Ver en grande">
+              ⤢
+            </button>
           </div>
 
-          {/* Miniaturas si hay más de una */}
           {images.length > 1 && (
-            <div className="pd-thumbs">
+            <div className="pd-thumbs" role="list">
               {images.map((src, i) => (
                 <button
-                  key={i}
-                  className="pd-thumb"
-                  onClick={() => setIdx(i)}
-                  style={{
-                    outline: i === idx ? "2px solid #0aa1dd" : "none",
-                    padding: 0,
-                    background: "transparent",
-                    cursor: "pointer",
-                  }}
-                  aria-label={`Imagen ${i + 1}`}
+                  key={src + i}
+                  className={`pd-thumb ${i === active ? "is-active" : ""}`}
+                  onClick={() => { setActive(i); setZoom(false); }}
+                  role="listitem"
+                  aria-label={`Ver imagen ${i + 1}`}
+                  title={`Imagen ${i + 1}`}
                 >
-                  <img src={src} alt={`Vista ${i + 1}`} />
+                  <img src={src} alt={`${prod.title} miniatura ${i + 1}`} loading="lazy" />
                 </button>
               ))}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* INFO */}
-        <div className="product-hero__info">
-          <h1 className="product-hero__title">{product.title}</h1>
-          <p className="product-hero__meta">
-            {"★".repeat(rating)}{" "}
-            <span style={{ color: "#64748b" }}>({reviews})</span>
-          </p>
+        {/* Info */}
+        <section className="pd-info">
+          <h1 className="pd-title">{prod.title}</h1>
 
-          <div className="product-hero__price">${price}</div>
-
-          <div className="product-hero__actions">
-            <button className="btn btn--primary">Agregar al carrito</button>
-            <a
-              className="btn btn--whatsapp"
-              href={`https://wa.me/5491112345678?text=${encodeURIComponent(
-                `Hola, quisiera más info sobre "${product.title}".`
-              )}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Consultar por WhatsApp
-            </a>
+          <div className="pd-badges">
+            {prod.brand && <span className="pd-badge">{prod.brand}</span>}
+            {prod.featured && <span className="pd-badge pd-badge--feat">Destacado</span>}
+            {prod.freeShipping && <span className="pd-badge pd-badge--ship">Envío gratis</span>}
           </div>
 
-          <button
-            className="btn btn--link"
-            onClick={(e) => {
-              e.preventDefault();
-              const el = document.getElementById("pd-desc");
-              el?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-          >
-            Ver descripción
-          </button>
+          {prod.price != null && <p className="pd-price">{priceAR(prod.price)}</p>}
 
-          {/* Descripción y características */}
-          <section id="pd-desc" className="product-detail__body">
-            <div>
-              <h2>Descripción</h2>
-              <p>{product.description || "Descripción no disponible."}</p>
+          {prod.category && (
+            <p className="pd-meta">
+              Categoría: <strong>{prod.category}</strong>
+            </p>
+          )}
+
+          <div className="pd-actions">
+            <button className="pd-btn pd-btn--buy">Comprar</button>
+            <button className="pd-btn">Agregar al carrito</button>
+            <Link className="pd-link" to="/">Volver</Link>
+          </div>
+
+          {prod.description && (
+            <div className="pd-section">
+              <h3>Descripción</h3>
+              <p className="pd-desc">{prod.description}</p>
             </div>
+          )}
 
-            <div>
-              <h2>Características</h2>
-              <ul className="ul-clean">
-                {(product.features && product.features.length
-                  ? product.features
-                  : ["Beneficio 1", "Beneficio 2"]
-                ).map((f, i) => (
-                  <li key={i}>• {f}</li>
-                ))}
+          {Array.isArray(prod.specs) && prod.specs.length > 0 && (
+            <div className="pd-section">
+              <h3>Especificaciones</h3>
+              <ul className="pd-specs">
+                {prod.specs.map((s, idx) => <li key={idx}>{s}</li>)}
               </ul>
             </div>
-          </section>
-        </div>
-
-        {/* ASIDE (beneficios/descuentos) - solo desktop (el CSS lo esconde en mobile) */}
-        <aside className="pd-aside">
-          <div className="pd-card">
-            <h4>Descuentos</h4>
-            <div className="pd-badge pd-badge--off">10% OFF · Transferencia</div>
-            <p style={{ margin: "8px 0 0", color: "#475569" }}>
-              Pagando con transferencia bancaria.
-            </p>
-          </div>
-
-          <div className="pd-card">
-            <h4>Medios de pago</h4>
-            <div className="pd-badge pd-badge--cuotas">3 y 6 cuotas</div>
-            <p style={{ margin: "8px 0 0", color: "#475569" }}>
-              Con tarjetas seleccionadas.
-            </p>
-          </div>
-
-          <div className="pd-card">
-            <h4>Envíos</h4>
-            <div className="pd-badge pd-badge--envio">¡Envío gratis!</div>
-            <p style={{ margin: "8px 0 0", color: "#475569" }}>
-              A partir de $50.000 en CABA/GBA.
-            </p>
-          </div>
-        </aside>
-      </section>
-
-      {/* CTA fija inferior para mobile */}
-      <div className="pd-cta">
-        <button className="btn btn--primary">Agregar al carrito</button>
-        <a
-          className="btn btn--whatsapp"
-          href={`https://wa.me/5491112345678?text=${encodeURIComponent(
-            `Hola, quisiera más info sobre "${product.title}".`
-          )}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          WhatsApp
-        </a>
+          )}
+        </section>
       </div>
-    </div>
+
+      {/* Lightbox a pantalla completa */}
+      {lightboxOpen && (
+        <div className="pd-lightbox" onClick={() => setLightboxOpen(false)}>
+          <button className="pd-lightbox-close" aria-label="Cerrar">✕</button>
+          <img src={images[active]} alt={prod.title} />
+          {images.length > 1 && (
+            <>
+              <button className="pd-lightbox-prev" onClick={(e) => { e.stopPropagation(); setActive((i) => (i - 1 + images.length) % images.length); }}>‹</button>
+              <button className="pd-lightbox-next" onClick={(e) => { e.stopPropagation(); setActive((i) => (i + 1) % images.length); }}>›</button>
+            </>
+          )}
+        </div>
+      )}
+    </main>
   );
 }

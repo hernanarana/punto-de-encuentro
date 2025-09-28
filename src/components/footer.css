@@ -1,0 +1,39 @@
+/* Usa tu paleta existente. Si tenés variables, se adaptan bien. */
+.site-footer{
+  background:#0b1220; color:#fff;
+  padding:28px 0; margin-top: 40px;
+}
+.footer-inner{
+  max-width:1200px; margin:0 auto;
+  display:grid; gap:14px; place-items:center; text-align:center;
+}
+
+/* Marca mini */
+.footer-brand{ display:flex; align-items:center; gap:10px }
+.footer-logo{
+  width:36px; height:36px; border-radius:8px; object-fit:contain;
+  background:#fff; padding:4px;
+}
+.footer-brand-text{ display:flex; flex-direction:column; line-height:1.1 }
+.footer-brand-text strong{ font-family: var(--brand-font, inherit); font-weight:900 }
+.footer-brand-text span{ opacity:.85; font-weight:700; font-size:12px }
+
+/* Social buttons centradas */
+.footer-socials{ display:flex; gap:10px; align-items:center; justify-content:center }
+.social-btn{
+  width:40px; height:40px; border-radius:999px;
+  background:#fff; color:#0b1220; display:inline-flex;
+  align-items:center; justify-content:center;
+  box-shadow:0 8px 22px rgba(0,0,0,.16);
+  text-decoration:none; transition: transform .08s ease, filter .12s ease;
+}
+.social-btn:hover{ transform: translateY(-1px); filter:brightness(.98) }
+.social-btn svg{ width:22px; height:22px; fill:#0b1220 }
+
+/* Copyright */
+.footer-copy{ opacity:.9; font-size:14px }
+
+/* En móviles, todo centrado por defecto */
+@media (max-width:820px){
+  .footer-inner{ padding:0 12px }
+}

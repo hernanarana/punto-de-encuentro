@@ -1,135 +1,109 @@
 // src/components/MobileFilters.jsx
-import { useEffect, useRef } from "react";
+import PropTypes from "prop-types";
+import { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 
-/**
- * Modal de filtros para móvil (scrollable + accesible)
- *
- * Props:
- * - open: boolean
- * - title?: string (default "Filtros")
- * - onClose: () => void
- * - onApply?: () => void   (si no se pasa, usa onClose)
- * - onClear?: () => void   (opcional)
- * - children: contenido del panel de filtros
- *
- * Uso:
- * <MobileFilters
- *   open={showFilters}
- *   onClose={()=>setShowFilters(false)}
- *   onApply={()=>setShowFilters(false)}
- *   onClear={clearAll}
- * >
- *   <FilterSidebar ... />
- * </MobileFilters>
- */
+const S = (v) => (v == null ? "" : String(v));
+
 export default function MobileFilters({
   open,
-  title = "Filtros",
   onClose,
-  onApply,
-  onClear,
-  children,
+  searchPath = "/buscar",
 }) {
-  const dialogRef = useRef(null);
+  const loc = useLocation();
 
-  // Bloquea scroll del body y soporta Escape
+  const [q, setQ] = useState("");
+  const [min, setMin] = useState("");
+  const [max, setMax] = useState("");
+
   useEffect(() => {
     if (!open) return;
+    const u = new URLSearchParams(loc.search);
+    setQ(u.get("q") || "");
+    setMin(u.get("min") || "");
+    setMax(u.get("max") || "");
+  }, [loc.search, open]);
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+  const canApply = useMemo(
+    () => S(q).trim() || S(min).trim() || S(max).trim(),
+    [q, min, max]
+  );
 
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
-    };
-    window.addEventListener("keydown", onKey);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const sp = new URLSearchParams();
+    if (S(q).trim())   sp.set("q", q.trim());
+    if (S(min).trim()) sp.set("min", S(min).trim());
+    if (S(max).trim()) sp.set("max", S(max).trim());
 
-    // foco inicial
-    const t = setTimeout(() => dialogRef.current?.focus(), 0);
+    // 🔥 Bypass React Router: navegación real del navegador
+    const url = `${searchPath}?${sp.toString()}`;
+    window.location.assign(url);
 
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      window.removeEventListener("keydown", onKey);
-      clearTimeout(t);
-    };
-  }, [open, onClose]);
+    onClose?.();
+  };
 
   if (!open) return null;
 
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) onClose?.();
-  };
-
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="mf-title"
-        ref={dialogRef}
-        tabIndex={-1}
-      >
-        {/* Header fijo dentro del modal */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            position: "sticky",
-            top: 0,
-            background: "#fff",
-            paddingBottom: 8,
-            zIndex: 1,
-          }}
-        >
-          <h3 id="mf-title" style={{ margin: 0 }}>
-            {title}
-          </h3>
-          <button
-            onClick={onClose}
-            aria-label="Cerrar"
-            style={{
-              marginLeft: "auto",
-              border: "none",
-              background: "transparent",
-              fontSize: 22,
-              cursor: "pointer",
-            }}
-          >
-            ×
-          </button>
+    <>
+      <div className="drawer drawer--open" aria-hidden={!open}>
+        <div className="drawer__head">
+          <strong>Filtrar productos</strong>
+          <button className="icon-btn" onClick={onClose} aria-label="Cerrar">✕</button>
         </div>
 
-        {/* Contenido scrolleable */}
-        <div style={{ display: "grid", gap: 12 }}>{children}</div>
+        <form className="drawer__body" onSubmit={handleSubmit}>
+          <label style={{ fontSize: 12, opacity: .8 }}>Buscar</label>
+          <input
+            name="q"
+            placeholder="Ej: heladera"
+            value={q}
+            onChange={(e)=> setQ(e.target.value)}
+            autoComplete="off"
+            inputMode="search"
+            style={{ marginTop: 6, marginBottom: 12 }}
+          />
 
-        {/* Footer fijo con acciones */}
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            marginTop: 12,
-            position: "sticky",
-            bottom: 0,
-            background: "#fff",
-            paddingTop: 8,
-          }}
-        >
-          {onClear && (
-            <button className="btn btn--ghost" style={{ flex: 1 }} onClick={onClear}>
-              Limpiar
-            </button>
-          )}
-          <button
-            className="btn btn--primary"
-            style={{ flex: 1 }}
-            onClick={onApply ?? onClose}
-          >
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap: 8 }}>
+            <div>
+              <label style={{ fontSize: 12, opacity: .8 }}>Mín</label>
+              <input
+                name="min"
+                type="number"
+                inputMode="numeric"
+                placeholder="0"
+                value={min}
+                onChange={(e)=> setMin(e.target.value)}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, opacity: .8 }}>Máx</label>
+              <input
+                name="max"
+                type="number"
+                inputMode="numeric"
+                placeholder="999999"
+                value={max}
+                onChange={(e)=> setMax(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div style={{ height: 12 }} />
+          <button className="btn btn--primary" type="submit" disabled={!canApply}>
             Aplicar
           </button>
-        </div>
+        </form>
       </div>
-    </div>
+
+      <div className="overlay" onClick={onClose} />
+    </>
   );
 }
+
+MobileFilters.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  searchPath: PropTypes.string,
+};

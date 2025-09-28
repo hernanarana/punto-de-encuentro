@@ -1,15 +1,19 @@
-export default function WhatsAppFab() {
+// src/components/WhatsAppFab.jsx
+export default function WhatsAppFab(){
+  const tel = "5491166677788"; // el mismo de soporte
   return (
     <a
-      href="https://wa.me/5491112345678"
+      className="wa-fab"
+      href={`https://wa.me/${tel}?text=${encodeURIComponent("Hola, quisiera hacer una consulta 👋")}`}
       target="_blank"
       rel="noreferrer"
-      className="wa-fab"
-      aria-label="Chatear por WhatsApp"
-      title="Chatear por WhatsApp"
+      aria-label="WhatsApp"
+      title="Escribinos por WhatsApp"
     >
-      {/* Podés reemplazar por un SVG/ícono */}
-      <span>🟢</span>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        alt="" style={{ width:26, height:26 }}
+      />
     </a>
   );
 }

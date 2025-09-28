@@ -1,10 +1,6 @@
-// src/utils/asset.js
-export function assetOrUrl(input) {
-  if (!input) return "/productos/placeholder.jpg";
-  if (typeof input !== "string") return "/productos/placeholder.jpg";
-  if (/^https?:\/\//i.test(input)) return input;
-
-  // normalizo: "productos/a.jpg" -> "/productos/a.jpg"
-  const clean = input.replace(/^\.?\//, "");     // quita "./" o inicio con "/"
-  return `/${clean}`;
+// Devuelve el path tal cual o desde /public si corresponde
+export function assetOrUrl(src = "") {
+  if (!src) return "/productos/placeholder.jpg";
+  if (src.startsWith("http")) return src;
+  return `/${src.replace(/^\/+/, "")}`;
 }

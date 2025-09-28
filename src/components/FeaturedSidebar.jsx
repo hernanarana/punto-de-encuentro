@@ -1,33 +1,30 @@
-import { Link } from "react-router-dom";
-import PRODUCTS from "../data/products.js";
-import ProductImage from "./ProductImage.jsx"; // si no lo tenés, reemplazá por <img .../>
-
-export default function FeaturedSidebar() {
-  const destacados = PRODUCTS.filter(p => p.featured).slice(0, 8);
-  if (!destacados.length) return null;
+// src/components/FeaturedSidebar.jsx
+export default function FeaturedSidebar({ items }) {
+  // Si te pasan items por props los usa; si no, muestra 4 de ejemplo.
+  const featured = (items && items.length ? items : [
+    { id: 1, name: 'Producto 1', price: 0, img: '/productos/placeholder.jpg' },
+    { id: 2, name: 'Producto 2', price: 0, img: '/productos/placeholder.jpg' },
+    { id: 3, name: 'Producto 3', price: 0, img: '/productos/placeholder.jpg' },
+    { id: 4, name: 'Producto 4', price: 0, img: '/productos/placeholder.jpg' },
+  ]);
 
   return (
-    <aside className="featured-aside desktop-only" aria-labelledby="featured-title">
-      <h3 id="featured-title" className="featured-title">⭐ DESTACADOS</h3>
+    <aside className="featured-aside" aria-label="Destacados">
+      <h3 className="featured-title">Destacados</h3>
 
       <ul className="featured-list">
-        {destacados.map((p) => (
-          <li key={p.id} className="featured-item">
-            <Link to={`/producto/${p.id}`} className="featured-card">
+        {featured.map(p => (
+          <li key={p.id}>
+            <a className="featured-card" href={`/producto/${p.id}`}>
               <div className="featured-thumb">
-                {/* Si no tenés ProductImage, usá:
-                  <img src={p.image || p.images?.[0] || "/productos/placeholder.jpg"} alt={p.title} loading="lazy" />
-                */}
-                <ProductImage product={p} alt={p.title} height={80} />
+                <img src={p.img} alt={p.name} />
               </div>
 
               <div className="featured-info">
-                <span className="featured-name">{p.title}</span>
-                <span className="featured-price">
-                  {typeof p.price === "number" ? `$${p.price.toLocaleString("es-AR")}` : p.price}
-                </span>
+                <div className="featured-name">{p.name}</div>
+                <div className="featured-price">${p.price}</div>
               </div>
-            </Link>
+            </a>
           </li>
         ))}
       </ul>
