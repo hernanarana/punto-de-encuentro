@@ -1,14 +1,15 @@
 // src/App.jsx
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
 import Category from "./pages/Category.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import AdminRoutes from "./admin/AdminRoutes.jsx";
-
-// 🔎 Buscador independiente
 import SearchPage from "./pages/SearchPage.jsx";
+
+// 👇 nuevo
+import OffersPage from "./pages/OffersPage.jsx";
 
 export default function App() {
   return (
@@ -23,11 +24,8 @@ export default function App() {
         {/* 🔎 Buscador */}
         <Route path="buscar" element={<SearchPage />} />
 
-        {/* ✅ Atajo: /ofertas → /categoria/ofertas?minDiscount=50 */}
-        <Route
-          path="ofertas"
-          element={<Navigate to="/categoria/ofertas?minDiscount=50" replace />}
-        />
+        {/* ✅ /ofertas ahora usa un proxy seguro */}
+        <Route path="ofertas" element={<OffersPage />} />
 
         <Route path="*" element={<NotFound />} />
       </Route>
