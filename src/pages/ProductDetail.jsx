@@ -6,7 +6,7 @@ import useBreakpoint from "../hooks/useBreakpoint.js";
 import SearchBar from "../components/SearchBar.jsx";
 import { toSlug } from "../data/firestoreProducts.js";
 import { fetchProductBySlugOrId } from "../data/firestoreProducts.js";
-import "./ProductDetail.css"; // asegúrate de tenerlo importado
+import "./productDetail.css"; // asegúrate de tenerlo importado
 
 /* === Categorías fijas (ordenadas, para el panel mobile) === */
 const CATEGORIES_NAV = [
