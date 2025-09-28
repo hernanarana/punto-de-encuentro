@@ -1,12 +1,14 @@
 // src/pages/ProductDetail.jsx
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import useBreakpoint from "../hooks/useBreakpoint.js";
 import SearchBar from "../components/SearchBar.jsx";
 import { toSlug } from "../data/firestoreProducts.js";
 import { fetchProductBySlugOrId } from "../data/firestoreProducts.js";
-import "./ProductDetail.css"; // asegúrate de tenerlo importado
+import ProductGallery from "../components/ProductGallery.jsx";
+
+import "./ProductDetail.css";
 
 /* === Categorías fijas (ordenadas, para el panel mobile) === */
 const CATEGORIES_NAV = [
@@ -64,7 +66,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const isMobile = useBreakpoint("(max-width: 767px)");
 
-  // estados del panel mobile (no alteran el producto; sirven para navegar/consistencia)
+  // estados del panel mobile (navegación/consistencia)
   const [q, setQ] = useState("");
   const [min, setMin] = useState("");
   const [max, setMax] = useState("");
@@ -73,20 +75,11 @@ export default function ProductDetail() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const [active, setActive] = useState(0);
-  const [zoom, setZoom] = useState(false);
-  const [zoomOrigin, setZoomOrigin] = useState("50% 50%");
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-
-  const mainRef = useRef(null);
-
   useEffect(() => {
     let alive = true;
     setLoading(true);
     setErr("");
     setProd(null);
-    setActive(0);
-    setZoom(false);
 
     fetchProductBySlugOrId(id)
       .then((p) => alive && setProd(p))
@@ -96,10 +89,13 @@ export default function ProductDetail() {
     return () => { alive = false; };
   }, [id]);
 
+  // construir array de imágenes (principal + extras) sin duplicados
   const images = useMemo(() => {
     if (!prod) return [];
-    const arr = Array.isArray(prod.images) && prod.images.length ? prod.images : [prod.image].filter(Boolean);
-    return [...new Set(arr.filter(Boolean))];
+    const arr = [];
+    if (prod.image) arr.push(prod.image);
+    if (Array.isArray(prod.images)) arr.push(...prod.images);
+    return Array.from(new Set(arr.filter(Boolean)));
   }, [prod]);
 
   const priceAR = (n) =>
@@ -107,32 +103,27 @@ export default function ProductDetail() {
       ? n.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 })
       : n;
 
-  // —— Zoom handling (transform-origin hacia el cursor)
-  const onMove = (e) => {
-    if (!zoom || !mainRef.current) return;
-    const rect = mainRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomOrigin(`${x}% ${y}%`);
-  };
+  /* === CONSULTAR POR WHATSAPP === */
+  const handleConsult = () => {
+    if (!prod) return;
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const text = `¡Hola! Quiero consultar por: ${prod.title}\n${url}`;
 
-  const onKey = (e) => {
-    if (!images.length) return;
-    if (e.key === "ArrowRight") setActive((i) => (i + 1) % images.length);
-    if (e.key === "ArrowLeft") setActive((i) => (i - 1 + images.length) % images.length);
-    if (e.key === "Escape") { setZoom(false); setLightboxOpen(false); }
-  };
+    // Si querés setear un número fijo, creá VITE_WHATSAPP_PHONE en .env (solo dígitos, ej: 5491122334455)
+    const phone = (import.meta.env.VITE_WHATSAPP_PHONE || "").replace(/[^\d]/g, "");
 
-  useEffect(() => {
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [images.length]);
+    const wa = phone
+      ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+
+    window.open(wa, "_blank", "noopener");
+  };
 
   if (loading) return <main className="pd-wrap">Cargando…</main>;
   if (err) {
     return (
       <main className="pd-wrap" style={{ color: "#f87171" }}>
-        Error: {err} — <Link to="/" className="pd-link">Volver</Link>
+        Error: {err} — <Link className="pd-link" to="/">Volver</Link>
       </main>
     );
   }
@@ -141,50 +132,12 @@ export default function ProductDetail() {
   return (
     <main className="pd-wrap">
       <div className="pd-grid">
-        {/* Galería */}
-        <section>
-          <div
-            className={`pd-main ${zoom ? "is-zoomed" : ""}`}
-            ref={mainRef}
-            onMouseMove={onMove}
-            onMouseLeave={() => setZoom(false)}
-          >
-            <img
-              className="pd-mainimg"
-              src={images[active]}
-              alt={prod.title}
-              loading="eager"
-              style={{
-                transform: zoom ? "scale(1.9)" : "scale(1)",
-                transformOrigin: zoomOrigin,
-              }}
-              onClick={() => setZoom((z) => !z)}
-            />
-            {/* Botón lightbox */}
-            <button className="pd-lightbox-btn" onClick={() => setLightboxOpen(true)} aria-label="Ver en grande">
-              ⤢
-            </button>
-          </div>
-
-          {images.length > 1 && (
-            <div className="pd-thumbs" role="list">
-              {images.map((src, i) => (
-                <button
-                  key={src + i}
-                  className={`pd-thumb ${i === active ? "is-active" : ""}`}
-                  onClick={() => { setActive(i); setZoom(false); }}
-                  role="listitem"
-                  aria-label={`Ver imagen ${i + 1}`}
-                  title={`Imagen ${i + 1}`}
-                >
-                  <img src={src} alt={`${prod.title} miniatura ${i + 1}`} loading="lazy" />
-                </button>
-              ))}
-            </div>
-          )}
+        {/* ===== Galería (con zoom, thumbs y lightbox) ===== */}
+        <section className="product-detail__gallery">
+          <ProductGallery images={images} title={prod.title || "Producto"} />
         </section>
 
-        {/* Info */}
+        {/* ===== Info ===== */}
         <section className="pd-info">
           <h1 className="pd-title">{prod.title}</h1>
 
@@ -203,8 +156,9 @@ export default function ProductDetail() {
           )}
 
           <div className="pd-actions">
-            <button className="pd-btn pd-btn--buy">Comprar</button>
-            <button className="pd-btn">Agregar al carrito</button>
+            <button className="pd-btn pd-btn--consult" onClick={handleConsult}>
+              Consultar por WhatsApp
+            </button>
             <Link className="pd-link" to="/">Volver</Link>
           </div>
 
@@ -226,20 +180,6 @@ export default function ProductDetail() {
         </section>
       </div>
 
-      {/* Lightbox a pantalla completa */}
-      {lightboxOpen && (
-        <div className="pd-lightbox" onClick={() => setLightboxOpen(false)}>
-          <button className="pd-lightbox-close" aria-label="Cerrar">✕</button>
-          <img src={images[active]} alt={prod.title} />
-          {images.length > 1 && (
-            <>
-              <button className="pd-lightbox-prev" onClick={(e) => { e.stopPropagation(); setActive((i) => (i - 1 + images.length) % images.length); }}>‹</button>
-              <button className="pd-lightbox-next" onClick={(e) => { e.stopPropagation(); setActive((i) => (i + 1) % images.length); }}>›</button>
-            </>
-          )}
-        </div>
-      )}
-
       {/* ===== Panel de filtros en el menú hamburguesa (SOLO mobile) ===== */}
       {isMobile && (
         <MenuPortalPD>
@@ -254,8 +194,6 @@ export default function ProductDetail() {
                   value={q}
                   onChange={setQ}
                   onSubmit={() => {
-                    // Si querés, podés navegar a una ruta de búsqueda:
-                    // navigate(`/buscar?q=${encodeURIComponent(q)}`);
                     document.querySelector(".side-menu .close")?.click();
                   }}
                 />
@@ -315,7 +253,6 @@ export default function ProductDetail() {
                 type="button"
                 className="fp-apply"
                 onClick={() => {
-                  // En detalle no hay grid que actualizar; solo cerramos el menú.
                   document.querySelector(".side-menu .close")?.click();
                 }}
               >

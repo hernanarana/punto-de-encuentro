@@ -1,28 +1,146 @@
-/* src/pages/ProductDetail.css */
-.pd-wrap { padding: 16px; }
-.pd-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
-.pd-main { position: relative; background:#0b1220; border-radius:12px; overflow:hidden; }
-.pd-mainimg { width:100%; height:auto; display:block; transition: transform .2s ease; }
-.pd-main.is-zoomed .pd-mainimg { transform: scale(1.9); }
-.pd-thumbs { display:flex; gap:8px; margin-top:10px; }
-.pd-thumb { border:1px solid #223; background:#0f172a; border-radius:8px; padding:4px; }
-.pd-thumb.is-active { outline:2px solid #22c55e; }
-.pd-info { color:#fff; }
-.pd-title { font-size:1.25rem; font-weight:700; margin:8px 0; }
-.pd-badges { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
-.pd-badge { background:#0f172a; border:1px solid #233; padding:4px 8px; border-radius:999px; font-size:.85rem; }
-.pd-badge--feat { border-color:#22c55e; }
-.pd-badge--ship { border-color:#38bdf8; }
-.pd-price { color:#f59e0b; font-weight:800; margin:8px 0 12px; }
-.pd-actions { display:flex; gap:10px; margin:12px 0; }
-.pd-btn { background:#0f172a; border:1px solid #334155; color:#fff; padding:10px 14px; border-radius:10px; cursor:pointer; }
-.pd-btn--buy { background:#22c55e; border-color:#16a34a; color:#05130a; font-weight:800; }
-.pd-lightbox-btn { position:absolute; top:8px; right:8px; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:8px; padding:6px 8px; }
-.pd-lightbox { position:fixed; inset:0; background:rgba(0,0,0,.9); display:flex; align-items:center; justify-content:center; z-index:1000; }
-.pd-lightbox img { max-width:90vw; max-height:90vh; }
-.pd-lightbox-close, .pd-lightbox-prev, .pd-lightbox-next {
-  position:absolute; top:20px; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:8px; padding:8px 10px;
+/* ===== Layout básico ===== */
+.pd-wrap {
+  padding: 16px;
 }
-.pd-lightbox-close { right:20px; }
-.pd-lightbox-prev { left:20px; top:50%; transform:translateY(-50%); }
-.pd-lightbox-next { right:20px; top:50%; transform:translateY(-50%); }
+
+.pd-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 580px) 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .pd-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Info ===== */
+/* (el bloque .pd-info vacío se eliminó para evitar block-no-empty) */
+
+.pd-title {
+  margin: 0 0 8px 0;
+  font-size: clamp(22px, 2.3vw, 36px);
+  font-weight: 900;
+}
+
+.pd-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.pd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.pd-badge--feat {
+  background: #ffd166;
+  color: #222222;
+}
+
+.pd-badge--ship {
+  background: #b2f7d5;
+  color: #005533;
+}
+
+.pd-price {
+  font-size: clamp(22px, 2vw, 34px);
+  font-weight: 900;
+  margin: 6px 0 12px;
+}
+
+.pd-meta {
+  opacity: 0.85;
+  margin-bottom: 16px;
+}
+
+.pd-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0 24px;
+}
+
+.pd-link {
+  color: #8bd3ff;
+  text-decoration: underline;
+}
+
+/* ===== Secciones ===== */
+.pd-section {
+  margin: 18px 0;
+}
+
+.pd-section h3 {
+  margin: 0 0 8px;
+  font-weight: 800;
+}
+
+.pd-desc {
+  line-height: 1.6;
+}
+
+.pd-specs {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
+/* ===== Botón base ===== */
+.pd-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ===== Botón CONSULTAR – verde neón ===== */
+.pd-btn--consult {
+  color: #021;
+  background: #00ff95; /* verde neón */
+  box-shadow:
+    0 0 10px rgba(0, 255, 149, 0.75),
+    0 0 22px rgba(0, 255, 149, 0.45);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
+}
+
+.pd-btn--consult:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 0 12px rgba(0, 255, 149, 0.9),
+    0 0 28px rgba(0, 255, 149, 0.55);
+}
+
+.pd-btn--consult:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+/* ===== Galería (contiene el componente ProductGallery) ===== */
+.product-detail__gallery {
+  position: sticky;
+  top: 84px; /* ajustá si tu header cambia de alto */
+  align-self: start;
+}
+
+@media (max-width: 1024px) {
+  .product-detail__gallery {
+    position: static;
+    top: auto;
+  }
+}

@@ -28,12 +28,12 @@ const CATEGORIES_NAV = [
 ];
 
 const SYNONYMS = {
-  heladera:["heladera","helad","refrigerador","refrig","freezer","frio"],
-  termotanque:["termotanque","calentador de agua","tanque de agua","agua caliente"],
-  calefon:["calefon","calentador instantaneo","instantaneo"],
-  tv:["tv","tele","televisor","smart tv"],
-  lavarropa:["lavarropa","lavadora"],
-  notebook:["notebook","laptop","portatil"],
+  heladera: ["heladera", "helad", "refrigerador", "refrig", "freezer", "frio"],
+  termotanque: ["termotanque", "calentador de agua", "tanque de agua", "agua caliente"],
+  calefon: ["calefon", "calentador instantaneo", "instantaneo"],
+  tv: ["tv", "tele", "televisor", "smart tv"],
+  lavarropa: ["lavarropa", "lavadora"],
+  notebook: ["notebook", "laptop", "portatil"],
 };
 
 const textMatches = (q, ...fields) => {
@@ -42,7 +42,7 @@ const textMatches = (q, ...fields) => {
   const bag = fields.map(norm).join(" ");
   if (bag.includes(qn)) return true;
   for (const [key, variants] of Object.entries(SYNONYMS)) {
-    if (variants.some(v => qn.includes(v) || v.includes(qn))) {
+    if (variants.some((v) => qn.includes(v) || v.includes(qn))) {
       if (bag.includes(key)) return true;
     }
   }
@@ -61,9 +61,10 @@ const toNumberPrice = (v) => {
     s = s.replace(/,/g, "");
   } else if (s.includes(",") && !s.includes(".")) {
     const parts = s.split(",");
-    s = (parts.length === 2 && parts[1].length <= 2)
-      ? parts[0].replace(/\./g, "") + "." + parts[1]
-      : s.replace(/,/g, "");
+    s =
+      parts.length === 2 && parts[1].length <= 2
+        ? parts[0].replace(/\./g, "") + "." + parts[1]
+        : s.replace(/,/g, "");
   } else if (!s.includes(",") && s.includes(".")) {
     const parts = s.split(".");
     if (parts.length > 2 || (parts.length === 2 && parts[1].length === 3)) {
@@ -88,21 +89,22 @@ const normalizeRange = (minStr, maxStr) => {
 /* Detección de oferta flexible */
 const isOnOfferRaw = (p = {}) => {
   const price = toNumberPrice(p.price);
-  const sale  = toNumberPrice(p.salePrice);
+  const sale = toNumberPrice(p.salePrice);
   const hasSalePrice = sale > 0 && sale < price;
 
   const text = [p.badge, p.label, Array.isArray(p.tags) ? p.tags.join(" ") : ""]
-    .filter(Boolean).join(" ");
+    .filter(Boolean)
+    .join(" ");
   const m = String(text).match(/(\d{1,2})\s*%/);
   const percentFromText = m ? Number(m[1]) : 0;
 
-  const percentFromNumbers = (hasSalePrice && price>0)
-    ? Math.round((1 - (sale/price)) * 100)
-    : 0;
+  const percentFromNumbers =
+    hasSalePrice && price > 0 ? Math.round((1 - sale / price) * 100) : 0;
 
-  const discountPercent = Number.isFinite(p.discountPercent) && p.discountPercent>0
-    ? p.discountPercent
-    : (percentFromNumbers || percentFromText);
+  const discountPercent =
+    Number.isFinite(p.discountPercent) && p.discountPercent > 0
+      ? p.discountPercent
+      : percentFromNumbers || percentFromText;
 
   return p.onSale === true || discountPercent > 0 || hasSalePrice;
 };
@@ -137,7 +139,9 @@ function StarFilterPro({ value, onChange, compact = false }) {
           title={`${n} estrellas o más`}
         >
           <span className="stars" aria-hidden="true">
-            {Array.from({ length: n }).map((_, i) => <Star key={i} filled />)}
+            {Array.from({ length: n }).map((_, i) => (
+              <Star key={i} filled />
+            ))}
           </span>
         </button>
       ))}
@@ -167,7 +171,10 @@ function useMenuTarget() {
     const mo = new MutationObserver(find);
     mo.observe(document.body, { childList: true, subtree: true });
     const iv = setInterval(find, 250);
-    return () => { mo.disconnect(); clearInterval(iv); };
+    return () => {
+      mo.disconnect();
+      clearInterval(iv);
+    };
   }, []);
   return target;
 }
@@ -197,10 +204,13 @@ export default function Category() {
 
   const title = slugToTitle(slug);
   const slugNorm = norm(title);
-  const isOffers = slugNorm === "ofertas";
+
+  // ✅ si la ruta es /ofertas (sin slug), tratamos la página como ofertas igual
+  const pathIsOffers = location.pathname.endsWith("/ofertas");
+  const isOffers = pathIsOffers || slugNorm === "ofertas";
 
   const isDesktop = useBreakpoint("(min-width: 1024px)");
-  const isMobile  = useBreakpoint("(max-width: 767px)");
+  const isMobile = useBreakpoint("(max-width: 767px)");
 
   // filtros
   const [q, setQ] = useState("");
@@ -217,6 +227,16 @@ export default function Category() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
+  // (opcional) log para verificar montaje en prod
+  useEffect(() => {
+    console.log("[CATEGORY:PROD] mounted", {
+      path: location.pathname,
+      slug,
+      slugNorm,
+      isOffers,
+    });
+  }, [location.pathname, slug, slugNorm, isOffers]);
+
   // URL → estado
   useEffect(() => {
     const u = new URLSearchParams(location.search);
@@ -232,7 +252,8 @@ export default function Category() {
   // carga
   useEffect(() => {
     let alive = true;
-    setLoading(true); setErr("");
+    setLoading(true);
+    setErr("");
     (async () => {
       let rows = [];
 
@@ -253,26 +274,31 @@ export default function Category() {
 
       if (!alive) return;
 
-      const normalized = (rows||[]).map((p)=>{
+      const normalized = (rows || []).map((p) => {
         const priceNum = toNumberPrice(p.price);
-        const saleNum  = toNumberPrice(p.salePrice);
+        const saleNum = toNumberPrice(p.salePrice);
 
-        const text = [p.badge, p.label, Array.isArray(p.tags)? p.tags.join(" "): ""]
-          .filter(Boolean).join(" ");
+        const text = [p.badge, p.label, Array.isArray(p.tags) ? p.tags.join(" ") : ""]
+          .filter(Boolean)
+          .join(" ");
         let percentFromText = 0;
         const m = String(text).match(/(\d{1,2})\s*%/);
         if (m) percentFromText = Number(m[1]);
 
-        const percentFromNumbers = (saleNum>0 && priceNum>0 && saleNum<priceNum)
-          ? Math.round((1 - (saleNum/priceNum)) * 100)
-          : 0;
+        const percentFromNumbers =
+          saleNum > 0 && priceNum > 0 && saleNum < priceNum
+            ? Math.round((1 - saleNum / priceNum) * 100)
+            : 0;
 
-        const discountPercent = Number.isFinite(p.discountPercent) && p.discountPercent>0
-          ? p.discountPercent
-          : (percentFromNumbers || percentFromText);
+        const discountPercent =
+          Number.isFinite(p.discountPercent) && p.discountPercent > 0
+            ? p.discountPercent
+            : percentFromNumbers || percentFromText;
 
-        const onSale = (p.onSale === true) || discountPercent>0 || (saleNum>0 && saleNum<priceNum);
-        const finalPrice = (onSale && saleNum>0 && saleNum<priceNum) ? saleNum : priceNum;
+        const onSale =
+          p.onSale === true || discountPercent > 0 || (saleNum > 0 && saleNum < priceNum);
+        const finalPrice =
+          onSale && saleNum > 0 && saleNum < priceNum ? saleNum : priceNum;
 
         return {
           id: p.id,
@@ -282,7 +308,8 @@ export default function Category() {
           discountPercent,
           onSale,
           finalPrice,
-          image: p.image || (Array.isArray(p.images)?p.images[0]:"") || "/placeholder.jpg",
+          image:
+            p.image || (Array.isArray(p.images) ? p.images[0] : "") || "/placeholder.jpg",
           category: p.category || "",
           brand: p.brand || "",
           rating: Number(p.rating || p.stars || 0),
@@ -295,8 +322,14 @@ export default function Category() {
       setItems(normalized);
       setCategories(uniqueCats);
       setLoading(false);
-    })().catch((e)=>{ if(!alive) return; setErr(e?.message || "Error al cargar la categoría"); setLoading(false); });
-    return () => { alive = false; };
+    })().catch((e) => {
+      if (!alive) return;
+      setErr(e?.message || "Error al cargar la categoría");
+      setLoading(false);
+    });
+    return () => {
+      alive = false;
+    };
   }, [slug, title, slugNorm, isOffers]);
 
   // filtrado
@@ -304,10 +337,11 @@ export default function Category() {
     let arr = items.slice();
 
     if (q || brand || cat) {
-      arr = arr.filter((p) =>
-        textMatches(q, p.title, p.description, p.brand, p.category) &&
-        (!brand || norm(p.brand).includes(norm(brand))) &&
-        (!cat   || norm(p.category).includes(norm(cat)))
+      arr = arr.filter(
+        (p) =>
+          textMatches(q, p.title, p.description, p.brand, p.category) &&
+          (!brand || norm(p.brand).includes(norm(brand))) &&
+          (!cat || norm(p.category).includes(norm(cat)))
       );
     }
 
@@ -316,43 +350,73 @@ export default function Category() {
     if (maxN != null) arr = arr.filter((p) => p.finalPrice <= maxN);
 
     const ratingN = Number(rating) || 0;
-    if (ratingN > 0) arr = arr.filter((p) => (Number(p.rating)||0) >= ratingN);
+    if (ratingN > 0) arr = arr.filter((p) => (Number(p.rating) || 0) >= ratingN);
 
     if (isOffers) {
       const md = Number(minDiscount) || 0;
-      arr = arr.filter(p => p.onSale && (Number(p.discountPercent)||0) >= md);
+      arr = arr.filter((p) => p.onSale && (Number(p.discountPercent) || 0) >= md);
     }
 
     return arr;
   }, [items, q, brand, cat, min, max, rating, isOffers, minDiscount]);
 
-  const clearFilters = () => { setQ(""); setMin(""); setMax(""); setBrand(""); setCat(""); setRating(""); };
-  const goToCategory = (name) => { navigate(`/categoria/${toSlug(name)}`); document.querySelector(".side-menu .close")?.click(); };
+  const clearFilters = () => {
+    setQ("");
+    setMin("");
+    setMax("");
+    setBrand("");
+    setCat("");
+    setRating("");
+  };
+  const goToCategory = (name) => {
+    navigate(`/categoria/${toSlug(name)}`);
+    document.querySelector(".side-menu .close")?.click();
+  };
 
-  if (!slug) return <Navigate to="/" replace />;
+  // ⚠️ importante: permitimos /ofertas sin slug
+  if (!slug && !pathIsOffers) return <Navigate to="/" replace />;
 
   return (
     <div className="catalog-page" style={{ paddingInline: isDesktop ? 12 : 0 }}>
-      <div className="catalog-layout" style={{display:"grid",gridTemplateColumns:isDesktop?"280px 1fr":"1fr",gap:16,alignItems:"start"}}>
+      <div
+        className="catalog-layout"
+        style={{
+          display: "grid",
+          gridTemplateColumns: isDesktop ? "280px 1fr" : "1fr",
+          gap: 16,
+          alignItems: "start",
+        }}
+      >
         {/* === SIDEBAR (DESKTOP) === */}
         {isDesktop && (
-          <aside className="filters-card" style={{position:"sticky",top:84,alignSelf:"start",zIndex:1,height:"fit-content"}}>
+          <aside
+            className="filters-card"
+            style={{ position: "sticky", top: 84, alignSelf: "start", zIndex: 1, height: "fit-content" }}
+          >
             <h3 className="filters-title">
-              {slugNorm === "todos" ? "Todos los productos" : (isOffers ? "Ofertas" : title)}
+              {slugNorm === "todos" ? "Todos los productos" : isOffers ? "Ofertas" : title}
             </h3>
 
             <div className="filters-field">
               <label>Buscar</label>
-              <input
-                value={q} onChange={(e)=>setQ(e.target.value)} placeholder="nombre, marca…"
-              />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="nombre, marca…" />
             </div>
 
             <div className="filters-field">
               <label>Precio</label>
               <div className="filters-price">
-                <input type="number" placeholder="Mín" value={min} onChange={(e)=>setMin(e.target.value)} />
-                <input type="number" placeholder="Máx" value={max} onChange={(e)=>setMax(e.target.value)} />
+                <input
+                  type="number"
+                  placeholder="Mín"
+                  value={min}
+                  onChange={(e) => setMin(e.target.value)}
+                />
+                <input
+                  type="number"
+                  placeholder="Máx"
+                  value={max}
+                  onChange={(e) => setMax(e.target.value)}
+                />
               </div>
             </div>
 
@@ -364,12 +428,17 @@ export default function Category() {
             <div className="filters-field">
               <label>Categorías</label>
               <div className="filters-cats">
-                <button onClick={()=>goToCategory("todos")} className={`chip chip--cat ${slugNorm==="todos"?"is-active":""}`}>Todas</button>
-                {categories.map((c)=>(
+                <button
+                  onClick={() => goToCategory("todos")}
+                  className={`chip chip--cat ${slugNorm === "todos" ? "is-active" : ""}`}
+                >
+                  Todas
+                </button>
+                {categories.map((c) => (
                   <button
                     key={c}
-                    onClick={()=>goToCategory(c)}
-                    className={`chip chip--cat ${norm(c)===slugNorm?"is-active":""}`}
+                    onClick={() => goToCategory(c)}
+                    className={`chip chip--cat ${norm(c) === slugNorm ? "is-active" : ""}`}
                     title={c}
                   >
                     {c}
@@ -379,16 +448,20 @@ export default function Category() {
             </div>
 
             <div className="filters-actions">
-              <button onClick={clearFilters} className="btn-ghost">Limpiar</button>
+              <button onClick={clearFilters} className="btn-ghost">
+                Limpiar
+              </button>
             </div>
           </aside>
         )}
 
-        {/* === PANEL EN MENÚ (MOBILE) ORDENADO === */}
+        {/* === PANEL EN MENÚ (MOBILE) === */}
         {isMobile && (
           <MenuPortal>
             <div className="filter-panel">
-              <div className="fp-head"><div className="fp-title">Filtros</div></div>
+              <div className="fp-head">
+                <div className="fp-title">Filtros</div>
+              </div>
 
               <div className="fp-body">
                 {/* 1) Buscar */}
@@ -399,7 +472,9 @@ export default function Category() {
                     onChange={setQ}
                     onSubmit={() => {
                       document.querySelector(".side-menu .close")?.click();
-                      document.querySelector("section[aria-live='polite']")?.scrollIntoView({ behavior: "smooth" });
+                      document
+                        .querySelector("section[aria-live='polite']")
+                        ?.scrollIntoView({ behavior: "smooth" });
                     }}
                   />
                 </section>
@@ -408,8 +483,18 @@ export default function Category() {
                 <section className="fp-sec">
                   <div className="fp-label">Precio</div>
                   <div className="fp-row">
-                    <input type="number" placeholder="Mín" value={min} onChange={(e)=>setMin(e.target.value)} />
-                    <input type="number" placeholder="Máx" value={max} onChange={(e)=>setMax(e.target.value)} />
+                    <input
+                      type="number"
+                      placeholder="Mín"
+                      value={min}
+                      onChange={(e) => setMin(e.target.value)}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Máx"
+                      value={max}
+                      onChange={(e) => setMax(e.target.value)}
+                    />
                   </div>
                 </section>
 
@@ -418,7 +503,7 @@ export default function Category() {
                   <div className="fp-label">Categorías</div>
                   <div className="fp-chips">
                     <button
-                      className={`fp-chip ${slugNorm==="todos"?"is-active":""}`}
+                      className={`fp-chip ${slugNorm === "todos" ? "is-active" : ""}`}
                       onClick={() => {
                         navigate("/categoria/todos");
                         document.querySelector(".side-menu .close")?.click();
@@ -426,10 +511,10 @@ export default function Category() {
                     >
                       Todas
                     </button>
-                    {categories.map((c)=>(
+                    {categories.map((c) => (
                       <button
                         key={c}
-                        className={`fp-chip ${norm(c)===slugNorm?"is-active":""}`}
+                        className={`fp-chip ${norm(c) === slugNorm ? "is-active" : ""}`}
                         onClick={() => {
                           navigate(`/categoria/${toSlug(c)}`);
                           document.querySelector(".side-menu .close")?.click();
@@ -455,7 +540,9 @@ export default function Category() {
                   className="fp-apply"
                   onClick={() => {
                     document.querySelector(".side-menu .close")?.click();
-                    document.querySelector("section[aria-live='polite']")?.scrollIntoView({ behavior: "smooth" });
+                    document
+                      .querySelector("section[aria-live='polite']")
+                      ?.scrollIntoView({ behavior: "smooth" });
                   }}
                 >
                   Aplicar
@@ -471,19 +558,27 @@ export default function Category() {
         {/* === CONTENIDO === */}
         <div>
           <h2 style={{ margin: "8px 12px" }}>
-            {slugNorm === "todos" ? "Todos los productos" : (isOffers ? "Ofertas" : title)}
+            {slugNorm === "todos" ? "Todos los productos" : isOffers ? "Ofertas" : title}
           </h2>
 
-          {err && <p role="alert" style={{ color: "tomato", padding: 12 }}>{err}</p>}
+          {err && (
+            <p role="alert" style={{ color: "tomato", padding: 12 }}>
+              {err}
+            </p>
+          )}
 
           {loading ? (
-            <section><p style={{ opacity: 0.7, padding: 12 }}>Cargando productos…</p></section>
+            <section>
+              <p style={{ opacity: 0.7, padding: 12 }}>Cargando productos…</p>
+            </section>
           ) : listFinal.length === 0 ? (
-            <section><p style={{ opacity: 0.7, padding: 12 }}>
-              {isOffers
-                ? "No hay productos en oferta por ahora."
-                : `No hay productos para los filtros aplicados${q ? ` (“${q}”)` : ""}.`}
-            </p></section>
+            <section>
+              <p style={{ opacity: 0.7, padding: 12 }}>
+                {isOffers
+                  ? "No hay productos en oferta por ahora."
+                  : `No hay productos para los filtros aplicados${q ? ` (“${q}”)` : ""}.`}
+              </p>
+            </section>
           ) : (
             <section aria-live="polite">
               <ProductGrid products={listFinal} />
