@@ -205,7 +205,7 @@ export default function Category() {
   const title = slugToTitle(slug);
   const slugNorm = norm(title);
 
-  // ✅ Soportar /ofertas (con o sin slug)
+  // Permitir que /ofertas (sin slug) funcione igual que /categoria/ofertas
   const pathIsOffers = location.pathname.endsWith("/ofertas");
   const isOffers = pathIsOffers || slugNorm === "ofertas";
 
@@ -227,7 +227,12 @@ export default function Category() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // URL → estado (con default 50% si es Ofertas)
+  // Log mínimo para verificar montaje si hace falta (se puede borrar)
+  useEffect(() => {
+    console.log("[CATEGORY] mounted", { path: location.pathname, slug, isOffers });
+  }, [location.pathname, slug, isOffers]);
+
+  // URL → estado
   useEffect(() => {
     const u = new URLSearchParams(location.search);
     setQ(u.get("q") || "");
@@ -236,15 +241,14 @@ export default function Category() {
     setBrand(u.get("brand") || "");
     setCat(u.get("cat") || "");
     setRating(u.get("rating") || "");
-    setMinDiscount(u.get("minDiscount") || (isOffers ? "50" : ""));
-  }, [location.search, isOffers]);
+    setMinDiscount(u.get("minDiscount") || "");
+  }, [location.search]);
 
   // carga
   useEffect(() => {
     let alive = true;
     setLoading(true);
     setErr("");
-
     (async () => {
       let rows = [];
 
@@ -262,6 +266,7 @@ export default function Category() {
       }
 
       const uniqueCats = CATEGORIES_NAV.slice();
+
       if (!alive) return;
 
       const normalized = (rows || []).map((p) => {
@@ -287,8 +292,7 @@ export default function Category() {
 
         const onSale =
           p.onSale === true || discountPercent > 0 || (saleNum > 0 && saleNum < priceNum);
-        const finalPrice =
-          onSale && saleNum > 0 && saleNum < priceNum ? saleNum : priceNum;
+        const finalPrice = onSale && saleNum > 0 && saleNum < priceNum ? saleNum : priceNum;
 
         return {
           id: p.id,
@@ -317,7 +321,6 @@ export default function Category() {
       setErr(e?.message || "Error al cargar la categoría");
       setLoading(false);
     });
-
     return () => {
       alive = false;
     };
@@ -364,7 +367,7 @@ export default function Category() {
     document.querySelector(".side-menu .close")?.click();
   };
 
-  // ⚠️ si entran a /categoria sin slug, sólo lo permitimos cuando es /ofertas
+  // Permitimos /ofertas sin slug (si no es /ofertas, redirigimos)
   if (!slug && !pathIsOffers) return <Navigate to="/" replace />;
 
   return (
@@ -396,18 +399,8 @@ export default function Category() {
             <div className="filters-field">
               <label>Precio</label>
               <div className="filters-price">
-                <input
-                  type="number"
-                  placeholder="Mín"
-                  value={min}
-                  onChange={(e) => setMin(e.target.value)}
-                />
-                <input
-                  type="number"
-                  placeholder="Máx"
-                  value={max}
-                  onChange={(e) => setMax(e.target.value)}
-                />
+                <input type="number" placeholder="Mín" value={min} onChange={(e) => setMin(e.target.value)} />
+                <input type="number" placeholder="Máx" value={max} onChange={(e) => setMax(e.target.value)} />
               </div>
             </div>
 
@@ -439,9 +432,7 @@ export default function Category() {
             </div>
 
             <div className="filters-actions">
-              <button onClick={clearFilters} className="btn-ghost">
-                Limpiar
-              </button>
+              <button onClick={clearFilters} className="btn-ghost">Limpiar</button>
             </div>
           </aside>
         )}
@@ -450,9 +441,7 @@ export default function Category() {
         {isMobile && (
           <MenuPortal>
             <div className="filter-panel">
-              <div className="fp-head">
-                <div className="fp-title">Filtros</div>
-              </div>
+              <div className="fp-head"><div className="fp-title">Filtros</div></div>
 
               <div className="fp-body">
                 {/* 1) Buscar */}
@@ -463,9 +452,7 @@ export default function Category() {
                     onChange={setQ}
                     onSubmit={() => {
                       document.querySelector(".side-menu .close")?.click();
-                      document
-                        .querySelector("section[aria-live='polite']")
-                        ?.scrollIntoView({ behavior: "smooth" });
+                      document.querySelector("section[aria-live='polite']")?.scrollIntoView({ behavior: "smooth" });
                     }}
                   />
                 </section>
@@ -474,18 +461,8 @@ export default function Category() {
                 <section className="fp-sec">
                   <div className="fp-label">Precio</div>
                   <div className="fp-row">
-                    <input
-                      type="number"
-                      placeholder="Mín"
-                      value={min}
-                      onChange={(e) => setMin(e.target.value)}
-                    />
-                    <input
-                      type="number"
-                      placeholder="Máx"
-                      value={max}
-                      onChange={(e) => setMax(e.target.value)}
-                    />
+                    <input type="number" placeholder="Mín" value={min} onChange={(e) => setMin(e.target.value)} />
+                    <input type="number" placeholder="Máx" value={max} onChange={(e) => setMax(e.target.value)} />
                   </div>
                 </section>
 
@@ -531,9 +508,7 @@ export default function Category() {
                   className="fp-apply"
                   onClick={() => {
                     document.querySelector(".side-menu .close")?.click();
-                    document
-                      .querySelector("section[aria-live='polite']")
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    document.querySelector("section[aria-live='polite']")?.scrollIntoView({ behavior: "smooth" });
                   }}
                 >
                   Aplicar
@@ -552,24 +527,16 @@ export default function Category() {
             {slugNorm === "todos" ? "Todos los productos" : isOffers ? "Ofertas" : title}
           </h2>
 
-          {err && (
-            <p role="alert" style={{ color: "tomato", padding: 12 }}>
-              {err}
-            </p>
-          )}
+          {err && <p role="alert" style={{ color: "tomato", padding: 12 }}>{err}</p>}
 
           {loading ? (
-            <section>
-              <p style={{ opacity: 0.7, padding: 12 }}>Cargando productos…</p>
-            </section>
+            <section><p style={{ opacity: 0.7, padding: 12 }}>Cargando productos…</p></section>
           ) : listFinal.length === 0 ? (
-            <section>
-              <p style={{ opacity: 0.7, padding: 12 }}>
-                {isOffers
-                  ? "No hay productos en oferta por ahora."
-                  : `No hay productos para los filtros aplicados${q ? ` (“${q}”)` : ""}.`}
-              </p>
-            </section>
+            <section><p style={{ opacity: 0.7, padding: 12 }}>
+              {isOffers
+                ? "No hay productos en oferta por ahora."
+                : `No hay productos para los filtros aplicados${q ? ` (“${q}”)` : ""}.`}
+            </p></section>
           ) : (
             <section aria-live="polite">
               <ProductGrid products={listFinal} />
