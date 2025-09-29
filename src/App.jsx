@@ -14,7 +14,12 @@ export default function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="producto/:id" element={<ProductDetail />} />
+
+        {/* Catálogo */}
         <Route path="categoria/:slug" element={<Category />} />
+        <Route path="categoria" element={<Navigate to="/categoria/todos" replace />} />
+
+        {/* Buscador */}
         <Route path="buscar" element={<SearchPage />} />
 
         {/* Atajo: /ofertas => /categoria/ofertas?minDiscount=50 */}
@@ -23,11 +28,10 @@ export default function App() {
           element={<Navigate to="/categoria/ofertas?minDiscount=50" replace />}
         />
 
-        {/* Cualquier otra ruta dentro del layout */}
         <Route path="*" element={<NotFound />} />
       </Route>
 
-      {/* Árbol admin */}
+      {/* Admin */}
       <Route path="/admin/*" element={<AdminRoutes />} />
     </Routes>
   );

@@ -205,7 +205,7 @@ export default function Category() {
   const title = slugToTitle(slug);
   const slugNorm = norm(title);
 
-  // ✅ si la ruta es /ofertas (sin slug), tratamos la página como ofertas igual
+  // ✅ Soportar /ofertas (con o sin slug)
   const pathIsOffers = location.pathname.endsWith("/ofertas");
   const isOffers = pathIsOffers || slugNorm === "ofertas";
 
@@ -227,17 +227,7 @@ export default function Category() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // (opcional) log para verificar montaje en prod
-  useEffect(() => {
-    console.log("[CATEGORY:PROD] mounted", {
-      path: location.pathname,
-      slug,
-      slugNorm,
-      isOffers,
-    });
-  }, [location.pathname, slug, slugNorm, isOffers]);
-
-  // URL → estado
+  // URL → estado (con default 50% si es Ofertas)
   useEffect(() => {
     const u = new URLSearchParams(location.search);
     setQ(u.get("q") || "");
@@ -246,14 +236,15 @@ export default function Category() {
     setBrand(u.get("brand") || "");
     setCat(u.get("cat") || "");
     setRating(u.get("rating") || "");
-    setMinDiscount(u.get("minDiscount") || "");
-  }, [location.search]);
+    setMinDiscount(u.get("minDiscount") || (isOffers ? "50" : ""));
+  }, [location.search, isOffers]);
 
   // carga
   useEffect(() => {
     let alive = true;
     setLoading(true);
     setErr("");
+
     (async () => {
       let rows = [];
 
@@ -271,7 +262,6 @@ export default function Category() {
       }
 
       const uniqueCats = CATEGORIES_NAV.slice();
-
       if (!alive) return;
 
       const normalized = (rows || []).map((p) => {
@@ -327,6 +317,7 @@ export default function Category() {
       setErr(e?.message || "Error al cargar la categoría");
       setLoading(false);
     });
+
     return () => {
       alive = false;
     };
@@ -373,7 +364,7 @@ export default function Category() {
     document.querySelector(".side-menu .close")?.click();
   };
 
-  // ⚠️ importante: permitimos /ofertas sin slug
+  // ⚠️ si entran a /categoria sin slug, sólo lo permitimos cuando es /ofertas
   if (!slug && !pathIsOffers) return <Navigate to="/" replace />;
 
   return (
