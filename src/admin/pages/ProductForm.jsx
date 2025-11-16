@@ -23,7 +23,7 @@ const EMPTY = {
   rating: "",
   slug: "",
   image: "",
-  images: "",            // CSV: "url1, url2, ..."
+  images: "", // CSV: "url1, url2, ..."
 
   // Contenido
   description: "",
@@ -71,13 +71,15 @@ export default function ProductForm({ initial, onSave, saving }) {
   const [form, setForm] = useState(EMPTY);
   const [suppliersRef, setSuppliersRef] = useState([]);
 
-    // Config de Cloudinary
+  // Config de Cloudinary
   const cloudName = "dngytvhfn";
   const uploadPreset = "products_unsigned";
 
-  // Estado mientras se sube la imagen
+  // Estado mientras se sube la imagen principal
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // Estado mientras se suben imágenes de galería
+  const [uploadingGallery, setUploadingGallery] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, "suppliers"), orderBy("name", "asc"));
@@ -100,7 +102,7 @@ export default function ProductForm({ initial, onSave, saving }) {
             description: initial?.description || "",
             specsText: Array.isArray(initial?.specs)
               ? initial.specs.join("\n")
-              : (initial?.specs || ""),
+              : initial?.specs || "",
             price: initial?.price ?? "",
             rating: initial?.rating ?? "",
             supplierPrice: initial?.supplierPrice ?? "",
@@ -123,6 +125,147 @@ export default function ProductForm({ initial, onSave, saving }) {
         .filter(Boolean),
     [form.images]
   );
+
+  // Subir imagen principal a Cloudinary desde un archivo
+  // ⬇️ NUEVO: subir varias imágenes de galería
+async function handleUploadGalleryImages(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  try {
+    setUploadingGallery(true);
+
+    const uploaded = [];
+
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: "POST", body: formData }
+      );
+
+      const data = await res.json();
+
+      if (data.secure_url) {
+        uploaded.push(data.secure_url);
+      }
+    }
+
+    // Agregarlas a las existentes
+    setForm((f) => ({
+      ...f,
+      images: [...gallery, ...uploaded].join(", "),
+    }));
+
+    // Si no hay imagen principal, usar la primera subida
+    if (!form.image && uploaded.length > 0) {
+      setForm((f) => ({
+        ...f,
+        image: uploaded[0],
+      }));
+    }
+  } catch (err) {
+    console.error("Error subiendo galería:", err);
+    alert("Error subiendo imágenes.");
+  } finally {
+    setUploadingGallery(false);
+  }
+}
+
+  async function handleUploadMainImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploadingImage(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.secure_url) {
+        setForm((f) => ({
+          ...f,
+          image: data.secure_url,
+        }));
+      } else {
+        console.error("Respuesta Cloudinary:", data);
+        alert("No se pudo subir la imagen. Revisá la consola.");
+      }
+    } catch (err) {
+      console.error("Error subiendo imagen:", err);
+      alert("Hubo un error subiendo la imagen.");
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
+  // ⬇️ NUEVO: subir varias imágenes para la galería
+  async function handleUploadGalleryImages(e) {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    try {
+      setUploadingGallery(true);
+
+      const uploadedUrls = [];
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const data = await res.json();
+        if (data.secure_url) {
+          uploadedUrls.push(data.secure_url);
+        }
+      }
+
+      if (uploadedUrls.length) {
+        setForm((f) => {
+          const existing = (f.images || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+          const merged = [...existing, ...uploadedUrls];
+
+          return {
+            ...f,
+            images: merged.join(", "),
+            image: f.image || merged[0], // si no había principal, usamos la primera
+          };
+        });
+      }
+    } catch (err) {
+      console.error("Error subiendo imágenes de galería:", err);
+      alert("Hubo un error subiendo las imágenes de galería.");
+    } finally {
+      setUploadingGallery(false);
+      e.target.value = "";
+    }
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -160,10 +303,19 @@ export default function ProductForm({ initial, onSave, saving }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="form" style={{ display: "grid", gap: 16 }}>
+    <form
+      onSubmit={handleSubmit}
+      className="form"
+      style={{ display: "grid", gap: 16 }}
+    >
       <div
         className="grid"
-        style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(4, minmax(0, 1fr))", alignItems: "start" }}
+        style={{
+          display: "grid",
+          gap: 12,
+          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+          alignItems: "start",
+        }}
       >
         <label>
           Nombre
@@ -202,7 +354,10 @@ export default function ProductForm({ initial, onSave, saving }) {
 
         <label>
           Marca
-          <input value={form.brand} onChange={(e) => set("brand", e.target.value)} />
+          <input
+            value={form.brand}
+            onChange={(e) => set("brand", e.target.value)}
+          />
         </label>
 
         <label>
@@ -306,6 +461,7 @@ export default function ProductForm({ initial, onSave, saving }) {
           />
         </label>
 
+        {/* Imagen principal */}
         <label style={{ gridColumn: "span 2" }}>
           Imagen principal (URL)
           <input
@@ -315,6 +471,23 @@ export default function ProductForm({ initial, onSave, saving }) {
           />
         </label>
 
+        {/* Subir archivo y completar URL sola */}
+        <label style={{ gridColumn: "span 2" }}>
+          Subir imagen desde tu PC / celular
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handleUploadMainImage}
+          />
+          {uploadingImage && (
+            <span style={{ fontSize: 12, opacity: 0.8 }}>
+              Subiendo imagen...
+            </span>
+          )}
+        </label>
+
+        {/* Lista CSV de imágenes */}
         <label style={{ gridColumn: "span 2" }}>
           Imágenes (coma separadas)
           <input
@@ -322,6 +495,32 @@ export default function ProductForm({ initial, onSave, saving }) {
             onChange={(e) => set("images", e.target.value)}
             placeholder="https://url1.jpg, https://url2.jpg"
           />
+        </label>
+
+        {/* NUEVO: subir varias imágenes a la galería */}
+        <label style={{ gridColumn: "span 2" }}>
+          Subir varias imágenes (galería)
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleUploadGalleryImages}
+          />
+          {uploadingGallery && (
+            <span style={{ fontSize: 12, opacity: 0.8 }}>
+              Subiendo imágenes...
+            </span>
+          )}
+          <small
+            style={{
+              display: "block",
+              fontSize: 11,
+              opacity: 0.7,
+              marginTop: 4,
+            }}
+          >
+            Se agregan a la lista de arriba y se ven en las miniaturas.
+          </small>
         </label>
 
         {/* Contenido (ancho completo, ordenado) */}
@@ -364,12 +563,17 @@ export default function ProductForm({ initial, onSave, saving }) {
             <img
               src={toThumb(form.image, 320, 240)}
               alt="preview"
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
               onError={(e) => (e.currentTarget.src = FALLBACK)}
             />
           ) : (
             <div style={{ padding: 12, opacity: 0.6 }}>
-              Pegá una URL para ver la vista previa
+              Pegá una URL o subí una imagen para ver la vista previa
             </div>
           )}
         </div>
@@ -396,14 +600,19 @@ export default function ProductForm({ initial, onSave, saving }) {
               <img
                 src={toThumb(u, 160, 120)}
                 alt={`img ${i + 1}`}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                }}
                 onError={(e) => (e.currentTarget.src = FALLBACK)}
               />
             </div>
           ))}
           {gallery.length === 0 && (
             <div style={{ padding: 12, opacity: 0.6 }}>
-              Agregá URLs separadas por coma para ver miniaturas
+              Agregá URLs o subí imágenes para ver miniaturas
             </div>
           )}
         </div>

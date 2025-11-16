@@ -12,9 +12,9 @@ import {
 /**
  * useProducts
  * @param {object} opts
- *  - category?: string  -> filtra por categoría
+ *  - category?: string
  *  - onlyActive?: bool  -> por defecto true
- *  - top?: number       -> límite opcional
+ *  - top?: number
  */
 export function useProducts(opts = {}) {
   const {
@@ -27,23 +27,34 @@ export function useProducts(opts = {}) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let q = query(collection(db, "products"));
-    const wheres = [];
-    if (onlyActive) wheres.push(where("active", "==", true));
-    if (category) wheres.push(where("category", "==", category));
+    const col = collection(db, "products");
+    let constraints = [];
 
-    // arma el query
-    if (wheres.length) {
-      q = query(collection(db, "products"), ...wheres, orderBy("createdAt", "desc"));
-    } else {
-      q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+    // 🔥 filtra por activo
+    if (onlyActive) {
+      constraints.push(where("active", "==", true));
     }
+
+    // 🔥 filtra por categoría
+    if (category) {
+      constraints.push(where("category", "==", category));
+    }
+
+    // ⚠️ orderBy seguro (title siempre existe)
+    constraints.push(orderBy("title", "asc"));
+
+    // 🔥 límite si existe
     if (top) {
-      q = query(q, limit(top));
+      constraints.push(limit(top));
     }
+
+    const q = query(col, ...constraints);
 
     const unsub = onSnapshot(q, (snap) => {
-      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setItems(snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data()
+      })));
       setLoading(false);
     });
 

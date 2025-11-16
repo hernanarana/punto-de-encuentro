@@ -1,7 +1,7 @@
 // src/admin/pages/Products.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { db } from "../../firebaseConfig"; // ✅ ruta correcta (sube 2 niveles)
+import { db } from "../../firebaseConfig";
 import {
   collection,
   onSnapshot,
@@ -33,7 +33,6 @@ const getThumb = (p) => {
     (Array.isArray(p?.images) && p.images[0]) ||
     FALLBACK_SVG;
 
-  // Cloudinary: soporta /image/upload/ y /upload/
   return /res\.cloudinary\.com/.test(src)
     ? src
         .replace("/image/upload/", "/image/upload/c_fill,w_56,h_56,q_auto,f_auto/")
@@ -59,26 +58,62 @@ export default function Products() {
     return () => unsub();
   }, []);
 
-  const toggleActive = async (p) =>
-    updateDoc(doc(db, "products", p.id), { active: !p.active });
+  // 👉 ACTIVAR / DESACTIVAR
+  async function handleToggleActive(p) {
+    try {
+      const isActive = p.active !== false; // undefined cuenta como activo
+      await updateDoc(doc(db, "products", p.id), {
+        active: !isActive,
+      });
+    } catch (err) {
+      console.error("Error al cambiar activo:", err);
+      alert("No se pudo cambiar el estado activo/inactivo.");
+    }
+  }
 
-  const toggleFeatured = async (p) =>
-    updateDoc(doc(db, "products", p.id), {
-      featured: !p.featured,
-      featuredRank: !p.featured ? Number(p.featuredRank || 999) : 999,
-    });
+  // 👉 PONER / SACAR DE HOME
+  async function handleToggleFeatured(p) {
+    try {
+      const nextFeatured = !p.featured;
+      await updateDoc(doc(db, "products", p.id), {
+        featured: nextFeatured,
+        featuredRank: nextFeatured
+          ? Number(p.featuredRank || 999)
+          : 999,
+      });
+    } catch (err) {
+      console.error("Error al cambiar destacado:", err);
+      alert("No se pudo cambiar si va a Home.");
+    }
+  }
 
-  const toggle50 = async (p, is50) =>
-    updateDoc(doc(db, "products", p.id), { discountPercent: is50 ? 0 : 50 });
+  // 👉 OFERTA (usa discountPercent > 0)
+  async function handleToggleOffer(p) {
+    try {
+      const hasOffer = Number(p.discountPercent || 0) > 0;
+      const newDiscount = hasOffer ? 0 : 50; // si no tiene, le ponemos 50%
+      await updateDoc(doc(db, "products", p.id), {
+        discountPercent: newDiscount,
+      });
+    } catch (err) {
+      console.error("Error al cambiar oferta:", err);
+      alert("No se pudo cambiar la oferta.");
+    }
+  }
 
-  const remove = async (p) => {
-    if (!confirm(`¿Borrar ${p.title}?`)) return;
-    await deleteDoc(doc(db, "products", p.id));
-  };
+  // 👉 ELIMINAR
+  async function handleRemove(p) {
+    if (!confirm(`¿Borrar "${p.title}"?`)) return;
+    try {
+      await deleteDoc(doc(db, "products", p.id));
+    } catch (err) {
+      console.error("Error al borrar producto:", err);
+      alert("No se pudo borrar el producto.");
+    }
+  }
 
   return (
     <div style={{ padding: 16 }}>
-      {/* Encabezados como en tu UI */}
       <div style={{ opacity: 0.75, marginBottom: 12, lineHeight: 1.1 }}>
         <div>Nombre</div>
         <div>Precio</div>
@@ -88,11 +123,12 @@ export default function Products() {
 
       {items.map((p) => {
         const thumb = getThumb(p);
-        const is50 = Number(p.discountPercent || 0) >= 50;
+        const hasOffer = Number(p.discountPercent || 0) > 0;
+        const isActive = p.active !== false; // default activo
 
         return (
           <div key={p.id} style={{ marginBottom: 22 }}>
-            {/* Nombre + miniatura */}
+            {/* Nombre + miniatura + chips */}
             <div
               style={{
                 fontWeight: 600,
@@ -122,6 +158,7 @@ export default function Products() {
                 onError={(e) => (e.currentTarget.src = FALLBACK_SVG)}
               />
               <span>{p.title}</span>
+
               {p.featured && (
                 <span
                   style={{
@@ -135,7 +172,8 @@ export default function Products() {
                   Home
                 </span>
               )}
-              {is50 && (
+
+              {hasOffer && (
                 <span
                   style={{
                     fontSize: 11,
@@ -145,7 +183,21 @@ export default function Products() {
                     color: "#16a34a",
                   }}
                 >
-                  50% OFF
+                  Oferta
+                </span>
+              )}
+
+              {!isActive && (
+                <span
+                  style={{
+                    fontSize: 11,
+                    padding: "2px 6px",
+                    borderRadius: 999,
+                    background: "#ef444422",
+                    color: "#ef4444",
+                  }}
+                >
+                  Inactivo
                 </span>
               )}
             </div>
@@ -155,21 +207,26 @@ export default function Products() {
               {p.category || "—"}
             </div>
 
+            {/* Botones */}
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <Link to={`/admin/editar/${p.id}`} className="btn">
                 Editar
               </Link>
-              <button className="btn" onClick={() => remove(p)}>
+
+              <button className="btn" onClick={() => handleRemove(p)}>
                 Eliminar
               </button>
-              <button className="btn" onClick={() => toggleFeatured(p)}>
+
+              <button className="btn" onClick={() => handleToggleFeatured(p)}>
                 {p.featured ? "Sacar de Home" : "Poner en Home"}
               </button>
-              <button className="btn" onClick={() => toggle50(p, is50)}>
-                {is50 ? "Quitar 50%" : "Poner 50%"}
+
+              <button className="btn" onClick={() => handleToggleOffer(p)}>
+                {hasOffer ? "Quitar oferta" : "Poner en oferta"}
               </button>
-              <button className="btn" onClick={() => toggleActive(p)}>
-                {p.active ? "Desactivar" : "Activar"}
+
+              <button className="btn" onClick={() => handleToggleActive(p)}>
+                {isActive ? "Desactivar" : "Activar"}
               </button>
             </div>
           </div>

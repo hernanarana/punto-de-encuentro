@@ -1,5 +1,4 @@
 // src/data/firestoreProducts.js
-// ⬇️ Ajustá la ruta si tu archivo está en otro lado
 import { db } from "../firebaseConfig.js";
 
 import {
@@ -12,39 +11,51 @@ import {
   orderBy,
 } from "firebase/firestore";
 
+/** Pequeña ayuda: mapea docs y filtra solo los activos */
+function mapActive(snap) {
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    // ✅ solo productos activos (active !== false)
+    .filter((p) => p.active !== false);
+}
+
 /** ===========================
  *  Listado
  *  =========================== */
 
-/** Trae todos los productos (intenta ordenar por createdAt desc si existe) */
+/** Trae todos los productos (solo activos) */
 export async function fetchAllProducts() {
   const colRef = collection(db, "products");
   let q;
   try {
+    // si tenés createdAt, ordena por fecha
     q = query(colRef, orderBy("createdAt", "desc"));
   } catch {
-    // si el índice o el campo no existen aún, devolvemos sin orden
+    // si no existe índice o campo, usa sin orderBy
     q = colRef;
   }
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return mapActive(snap);
 }
 
-/** Trae productos por categoría (match exacto del campo `category`) */
+/** Trae productos por categoría (solo activos) */
 export async function fetchProductsByCategory(category) {
   if (!category) return [];
   const colRef = collection(db, "products");
   const q = query(colRef, where("category", "==", category));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return mapActive(snap);
 }
 
-/** (Opcional) Trae productos en oferta: `offer: true` */
+/** Trae productos en oferta (solo activos) */
 export async function fetchOffers() {
   const colRef = collection(db, "products");
+  // si usás discountPercent para oferta:
+  // const q = query(colRef, where("discountPercent", ">", 0));
+  // pero como tenías `offer: true`, respetamos eso:
   const q = query(colRef, where("offer", "==", true));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  return mapActive(snap);
 }
 
 /** ===========================
@@ -54,6 +65,7 @@ export async function fetchOffers() {
 /**
  * Trae un producto por docID; si no existe, intenta por campo `slug`.
  * Soporta valores con encode (usa decodeURIComponent).
+ * (Acá NO filtro active a propósito, para que en admin puedas abrirlo igual.)
  */
 export async function fetchProductBySlugOrId(raw) {
   const id = decodeURIComponent(raw ?? "");
