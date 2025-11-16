@@ -1,0 +1,103 @@
+/* ==== Footer fijo PRO ==== */
+
+/* El body crece libremente y el portal ajusta el espacio */
+html, body, #root {
+  min-height: 100%;
+}
+body {
+  margin: 0;
+  padding-bottom: 0 !important; /* el portal reserva espacio automáticamente */
+  overflow-x: hidden;
+}
+
+/* Si usás wrapper principal */
+.site-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+/* Área de contenido real */
+.site-content {
+  flex: 1;
+  overflow: visible;
+}
+
+/* FOOTER FIJO REAL */
+.site-footer {
+  /* position: fixed !important; */
+  /* left: 0; */
+  /* right: 0; */
+  /* bottom: 0; */
+  /* width: 100vw; */
+  /* z-index: 1100; */
+
+  background: rgba(11,18,32,.82);
+  backdrop-filter: blur(12px) saturate(140%);
+  color: #fff;
+  padding: 22px 0;
+  /* box-shadow: 0 -14px 34px rgba(0,0,0,.32); */
+  box-shadow: 0 0 34px rgba(0,0,0,.32);
+
+  animation: ft-in .45s ease-out both;
+}
+
+/* Grid interno */
+.footer__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px;
+
+  display: grid;
+  gap: 14px;
+  text-align: center;
+  place-items: center;
+}
+
+/* Redes */
+.socials {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.socials__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #fff;
+  color: #0b1220;
+  text-decoration: none;
+  box-shadow: 0 10px 26px rgba(0,0,0,.22);
+  transition: transform .18s ease, box-shadow .22s ease, filter .18s ease;
+}
+.socials__btn:hover {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 16px 34px rgba(0,0,0,.32);
+}
+
+/* Copyright */
+.footer__copy {
+  font-size: 14px;
+  opacity: .9;
+}
+
+/* Marca */
+.footer__brand {
+  opacity: .9;
+  font-size: 14px;
+}
+
+/* Animación de entrada */
+@keyframes ft-in {
+  from { transform: translateY(18px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Mobile */
+@media (max-width: 820px) {
+  .footer__grid { padding: 0 8px; }
+}

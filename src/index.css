@@ -1,0 +1,1792 @@
+/* =========================
+   THEME VARIABLES
+   ========================= */
+:root{
+  --primary:#9f1b9b;
+  --primary-2:#44014f;
+
+  --bg:#0b1220;          /* fondo tech */
+  --panel:#0f172aee;     /* glass panel */
+  --text:#e6f0ff;
+  --muted:#94a3b8;
+  --card:#101a2f;        /* opaco para no ver fondo detrás */
+  --border:rgba(255,255,255,.08);
+  --shadow:0 12px 30px rgba(0,0,0,.35);
+
+  /* layout */
+  --container:1400px;
+
+  /* alturas por modo */
+  --header-h-desktop:72px;
+  --header-h-mobile:56px;
+  --promo-h:48px;
+
+  /* valor efectivo (se redefine en mobile) */
+  --header-h: var(--header-h-desktop);
+
+  /* Home (cards compactas) */
+  --home-card-w: 220px;
+  --home-thumb-h: 140px;
+}
+@media (max-width: 767px){
+  :root{ --header-h: var(--header-h-mobile); }
+}
+
+/* =========================
+   BASE
+   ========================= */
+*{ box-sizing:border-box }
+html,body,#root{ height:100% }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(800px 400px at 10% -10%, #0b1928 0%, transparent 60%),
+    radial-gradient(1000px 500px at 120% 20%, #2f0629 0%, transparent 60%),
+    var(--bg);
+  /* Espacio para el footer fijo */
+  padding-bottom: 64px; /* igual al alto del footer en desktop */
+}
+
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 62px; /* igual al alto mínimo del footer en móvil */
+  }
+}
+img{ max-width:100%; height:auto; display:block }
+.ul-clean{ list-style:none; padding:0; margin:0 }
+.container{ max-width:var(--container); margin:0 auto; padding:16px }
+
+/* =========================
+   UTILIDADES DE VISIBILIDAD
+   ========================= */
+/* No usamos !important para no romper display:flex de otros bloques */
+.only-mobile { display:none; }
+.only-desktop{ display:initial; }
+@media (max-width: 767px){
+  .only-mobile { display:initial; }
+  .only-desktop{ display:none; }
+}
+
+/* =========================
+   ESTRUCTURA (layout)
+   ========================= */
+
+.site-wrapper{
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: visible; /* <- clave para que el sticky no se recorte */
+}
+
+.site-content{ flex:1; }
+
+/* =========================
+   HEADER (sticky)
+   ========================= */
+.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 1300; /* antes 100 */
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  box-shadow: var(--shadow);
+  min-height: var(--header-h);
+}
+.header-inner{
+  max-width:var(--container); margin:0 auto; padding:14px 16px;
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:16px;
+}
+.brand{ display:flex; align-items:center; gap:12px; color:#fff; text-decoration:none }
+.brand-logo{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; background:#fff; }
+.brand-text{ display:flex; flex-direction:column; line-height:1.1 }
+.brand-title{ font-weight:900; letter-spacing:.4px; font-size:18px }
+.brand-subtitle{ font-size:12px; opacity:.98; font-weight:700 }
+
+.main-nav{ display:flex; gap:22px; justify-content:center; flex-wrap:wrap }
+.nav-link{ background:transparent; border:0; color:#e9f8ff; font-weight:800; cursor:pointer; text-shadow:0 1px 0 rgba(0,0,0,.15); text-decoration:none }
+.nav-link:hover, .nav-link.active{ text-decoration:underline }
+
+.cart-btn{
+  position:relative; background:#fff; border:0; width:42px; height:42px; border-radius:999px;
+  display:inline-flex; align-items:center; justify-content:center; box-shadow:var(--shadow); cursor:pointer;
+}
+.cart-dot{ position:absolute; top:6px; right:6px; width:8px; height:8px; background:#ff4d4f; border-radius:999px }
+
+/* =========================
+  
+:root{
+  --promo-h: 48px; /* ajustá si tu barra mide otra cosa */
+
+
+/* PROMO BAR (sticky bajo el header, por encima del contenido) */
+/* Promo bar pegada debajo del header */
+.promo-bar {
+  position: sticky;
+  top: var(--header-h, 64px);
+  z-index: 40;
+
+  /* 🔧 Gris metalizado PRO */
+  background: linear-gradient(90deg, #b0b8c1 0%, #8a8f98 50%, #b0b8c1 100%) !important;
+  color: #000 !important;
+
+  min-height: var(--promo-h, 48px);
+  will-change: transform;
+}
+
+.promo-bar__inner{ display:flex; align-items:center; gap:12px; padding:10px 16px; }
+.promo-bar__link{ display:flex; flex-direction:column; text-decoration:none; color:#fff; }
+.promo-bar__link strong{ font-size:18px; line-height:1; }
+.promo-bar__link span{ font-size:13px; opacity:.95; }
+.promo-bar__close{
+  margin-left:auto; background:rgba(255,255,255,.15); border:0; color:#fff;
+  width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:18px;
+}
+
+/* El contenido respeta header+promo en los saltos */
+/* El contenido respeta header+promo en los saltos */
+.site-content{
+  scroll-padding-top: calc(var(--header-h) + var(--promo-h) + 12px);
+  overflow: visible; /* <- agregado */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================
+   TARJETAS / BOTONES
+   ========================= */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:transform .08s ease, box-shadow .12s ease;
+}
+.card:hover{ transform:translateY(-2px); box-shadow:0 16px 40px rgba(0,0,0,.45) }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  padding:10px 16px; border-radius:10px; font-weight:700; border:1px solid var(--border);
+  cursor:pointer; background:#0b1429; color:#e6f0ff; box-shadow:var(--shadow);
+  text-decoration:none;
+}
+.btn--primary{
+  background: linear-gradient(180deg, var(--primary), var(--primary-2));
+  border: 0; color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.3);
+}
+.btn--whatsapp{ background:#25D366; color:#fff; border:0 }
+.btn--block{ width:100%; }
+
+/* =========================
+   FABs (WhatsApp + Soporte)
+   ========================= */
+.fab{
+  position:fixed; right:24px; bottom:24px; z-index:50;
+  width:56px; height:56px; border-radius:999px; border:0;
+  display:grid; place-items:center; background:#25D366; color:#fff;
+  box-shadow:var(--shadow); cursor:pointer;
+}
+.fab--top{ bottom:96px; background:var(--primary) }
+
+/* =========================
+   SHEET (genérico)
+   ========================= */
+.sheet{ position:fixed; inset:0; z-index:1000; pointer-events:none; background:rgba(0,0,0,0); transition:background .2s ease; display:none; }
+.sheet--open{ display:block; pointer-events:auto; background:rgba(0,0,0,.65) }
+.sheet__body{
+  position:absolute; left:0; right:0; bottom: calc(12px + env(safe-area-inset-bottom));
+  margin:0 auto; width:min(560px, 100% - 16px);
+  background:#0f172a; border:1px solid var(--border); border-radius:16px; padding:16px;
+  transform:translateY(24px); transition:transform .2s ease; box-shadow:var(--shadow);
+  max-height: min(560px, calc(100vh - 140px)); overflow:auto;
+}
+.sheet--open .sheet__body{ transform:translateY(0) }
+.sheet__handle{ width:38px; height:4px; background:rgba(255,255,255,.25); border-radius:999px; margin:6px auto 10px }
+.sheet__title{ font-weight:900; font-size:18px; margin:0 4px 12px; text-align:center }
+.sheet__close{
+  position:absolute; right:10px; top:8px; width:30px; height:30px; border-radius:8px; border:0;
+  background:rgba(255,255,255,.12); color:#fff; font-size:20px; cursor:pointer;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+/* .site-footer{ background:#0b1429; color:#eaf4ff; margin-top:24px; padding:18px 0; border-top:1px solid var(--border) } */
+.socials{ display:flex; gap:10px; justify-content:center }
+.socials__btn{
+  display:inline-flex; width:40px; height:40px; border-radius:999px; align-items:center; justify-content:center;
+  background:#fff; color:#0b1220; text-decoration:none; box-shadow:var(--shadow);
+}
+/* Failsafe: si hubiera más de un <footer>, ocultá todos menos el último */
+.site-footer{ display:block; }
+.site-footer ~ .site-footer{ display:none; }
+
+/* =========================================================
+   HOME / CATEGORY · GRID DE PRODUCTOS
+   ========================================================= */
+/* Grilla “genérica” que usa ProductGrid.jsx */
+.grid{ display:grid; gap:12px; grid-template-columns: repeat(2,minmax(0,1fr)); }
+@media (min-width:480px){ .grid{ grid-template-columns: repeat(3,1fr); } }
+@media (min-width:768px){ .grid{ grid-template-columns: repeat(4,1fr); } }
+
+/* Grilla de la home centrada (exacto 2 cols en desktop, 1 col en mobile) */
+.catalog-page .products-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, var(--home-card-w)));
+  justify-content:center;
+  justify-items:center;
+  gap:18px;
+  max-width: calc(var(--home-card-w) * 2 + 18px);
+  margin:16px auto 32px;
+  padding:0 16px;
+}
+@media (max-width: 1024px){
+  .catalog-page .products-grid{
+    grid-template-columns: minmax(240px, 1fr);
+    max-width: 640px; gap:16px;
+  }
+}
+
+/* Tarjeta */
+.catalog-page .product-card{
+  background:#101a2f;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  width: var(--home-card-w);
+  max-width: var(--home-card-w);
+}
+.catalog-page .product-card .card__thumb{
+  position:relative; display:block; background:#0b1429;
+  border-bottom:1px solid var(--border);
+  height: var(--home-thumb-h);
+  overflow:hidden;
+}
+.catalog-page .product-card .card__thumb img{
+  width:100%; height:100%; object-fit:cover;
+}
+.catalog-page .product-card .badge--featured{
+  position:absolute; top:12px; left:12px;
+  padding:6px 10px; border-radius:999px; font-weight:800; font-size:12px;
+  background:#ffcf3f; color:#222;
+}
+.catalog-page .product-card .card__body{ display:grid; gap:8px; padding:12px; }
+.catalog-page .product-card .card__title{ text-decoration:none; color:#eaf4ff; font-weight:800; line-height:1.2; }
+.catalog-page .product-card .card__rating{ color:#ffb703; letter-spacing:1px; }
+.catalog-page .product-card .card__price{ color:#ea4a4a; font-weight:900; }
+.catalog-page .product-card .card__actions{ margin-top:6px; }
+
+/* En móviles, la grilla genérica pasa a 1 columna */
+@media (max-width: 767px){
+  .grid.grid--products { grid-template-columns: 1fr; }
+}
+
+/* Limpieza de restos en Home/Category: héroes/sliders/rails/bullets viejos */
+.catalog-page :is(
+  .hero, .hero-banner, .home-hero, .home-slider,
+  .slider, .carousel, .carousel-inner, .carousel__track,
+  .swiper, .swiper-container, .swiper-wrapper, .swiper-slide,
+  .glider, .splide, .slick-slider, .slick-track,
+  .dots, .indicators, .carousel-indicators, .carousel__indicators,
+  .swiper-pagination, .swiper-pagination-bullets, .swiper-pagination-bullet,
+  .glider-dots, .splide__pagination, .slick-dots, .slick-dots li, .slick-dots button,
+  .rails, .center-scroll, .featured-aside, .filters-aside
+){
+  display:none !important;
+  height:0 !important; margin:0 !important; padding:0 !important; border:0 !important;
+}
+/* Por si quedó algún bloque suelto arriba del grid oficial */
+.catalog-page > :not(.breadcrumb):not(.only-mobile):not(.products-grid):not(.catalog-layout){
+  display:none !important;
+}
+
+
+
+/* =========================
+   MOBILE BAR (solo mobile)
+   ========================= */
+.mb__bar{
+  position:sticky; top: calc(var(--header-h) + var(--promo-h));
+  z-index:20; background:var(--panel);
+  border-bottom:1px solid var(--border);
+  display:flex; gap:10px; align-items:center; justify-content:space-between;
+  padding:10px 12px;
+}
+.mb__btn{
+  display:flex; align-items:center; gap:6px;
+  background:var(--card); border:1px solid var(--border); color:var(--text);
+  padding:8px 12px; border-radius:12px; box-shadow:var(--shadow);
+}
+.mb__icon{ opacity:.8 }
+.mb__switch{ position:relative; display:flex; align-items:center; gap:8px; }
+.mb__switch input{ display:none }
+.mb__slider{
+  width:42px; height:24px; border-radius:999px; border:1px solid var(--border);
+  background:rgba(255,255,255,.1); position:relative; transition:.2s;
+}
+.mb__slider::after{
+  content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%;
+  background:white; transition:.2s;
+}
+.mb__switch input:checked + .mb__slider{ background:var(--primary) }
+.mb__switch input:checked + .mb__slider::after{ transform: translateX(18px) }
+.mb__label{ color:var(--text); font-size:.9rem }
+
+/* =========================
+   DRAWER (Filtros) / SHEET (Ordenar)
+   ========================= */
+.drawer{
+  position:fixed; inset:0 0 0 auto; width:min(92vw,380px);
+  transform:translateX(100%); transition:transform .25s ease;
+  background:var(--panel); border-left:1px solid var(--border); z-index:1100;
+  display:flex; flex-direction:column;
+}
+.drawer--open{ transform:none }
+.drawer__head{
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; color:var(--text);
+}
+.drawer__body{ padding:12px 16px; overflow:auto; height:100% }
+
+.sheet{
+  position:fixed; left:0; right:0; bottom:0;
+  transform:translateY(110%); transition:transform .25s ease; z-index:1100;
+  background:var(--panel); border-top:1px solid var(--border); border-radius:16px 16px 0 0;
+}
+.sheet--open{ transform:none }
+.sheet__head{
+  padding:14px 16px; border-bottom:1px solid var(--border);
+  display:flex; gap:10px; align-items:center; color:var(--text);
+}
+.sheet__body{ padding:6px 0 }
+.sheet__item{
+  width:100%; text-align:left; padding:14px 16px; border-bottom:1px solid var(--border); color:var(--text);
+}
+.sheet__item.is-active{ font-weight:700 }
+
+/* Overlay compartido (menú/sheets) */
+.overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.45); backdrop-filter:saturate(120%) blur(2px);
+  z-index:1090;
+}
+
+/* =========================
+   MENÚ HAMBURGUESA (SideMenu)
+   ========================= */
+.side-menu{
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: min(92vw, 380px);
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+   background:
+    radial-gradient(140% 180% at 0% 0%, rgba(147, 51, 234, 0.95) 0%, transparent 55%),
+    radial-gradient(160% 200% at 100% 0%, rgba(236, 72, 153, 0.85) 0%, transparent 60%),
+    #020617;
+
+  border-right: 1px solid var(--border);
+  z-index: 1100; /* arriba de promos, header, fabs */
+  display: flex; flex-direction: column;
+}
+.side-menu.is-open{ transform: none; }
+.side-menu__head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid var(--border); color:var(--text);
+}
+.side-menu__body{ padding:12px 16px; overflow:auto; flex:1; color:var(--text); }
+
+
+
+
+.menu-search{ position: relative; display:flex; gap:8px; align-items:center; }
+.menu-search input{
+  flex:1; padding:10px 12px; border-radius:12px;
+  border:1px solid var(--border); background:var(--card); color:var(--text);
+}
+.menu-search .apply-btn{
+  padding:9px 12px; border-radius:12px; border:1px solid var(--border);
+  background:var(--primary); color:#fff; font-weight:600;
+}
+.menu-search .clear-btn{
+  position:absolute; right:96px; width:28px; height:28px; border-radius:50%;
+  border:1px solid var(--border); background:var(--card); color:var(--text);
+}
+.menu-links{ margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+.menu-link{
+  padding:10px 12px; border-radius:10px; text-decoration:none;
+  color:var(--text); background:var(--card); border:1px solid var(--border);
+}
+.menu-link:active{ transform: translateY(1px); }
+
+/* =========================
+   DETALLE DE PRODUCTO (ML-like)
+   ========================= */
+.product-page .breadcrumb{ margin:12px 0 8px; font-size:.95rem; opacity:.9; }
+
+.product-page .product-hero{
+  display:grid;
+  grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(260px,0.8fr);
+  gap:24px; align-items:start; margin:16px 0 40px;
+}
+.product-page .product-hero > *{ min-width:0; }
+
+.product-page .pd-gallery{
+  display:grid; grid-template-columns: 88px 1fr; gap:16px; width:100%; min-width:0;
+}
+.product-page .pd-thumbs-vertical{
+  display:flex; flex-direction:column; gap:10px; max-height:480px; overflow:auto;
+  padding:8px; background:#0b1429; border:1px solid var(--border); border-radius:12px;
+}
+.product-page .pd-thumb{
+  width:64px; height:64px; padding:6px; background:#0b1429; border:1px solid var(--border);
+  border-radius:10px; cursor:pointer; display:grid; place-items:center;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.product-page .pd-thumb.is-active{ border-color:var(--primary); box-shadow:0 0 0 2px rgba(14,165,233,.3); }
+.product-page .pd-thumb img{ width:100%; height:100%; object-fit:contain; }
+
+.product-page .product-detail__image{
+  width:100%; height:480px; border-radius:10px; overflow:hidden;
+  background:#0b1429; border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+}
+.product-page .product-detail__image img{
+  max-width:100%; max-height:100%; object-fit:contain;
+  transition:transform .15s ease, transform-origin .05s ease;
+}
+.product-page .product-detail__image.is-zoomed img{ transform:scale(1.9); }
+
+.product-page .pd-thumbs-horizontal{ display:none; margin:12px auto 0; gap:10px; overflow-x:auto; padding:4px; scroll-behavior:smooth; }
+
+.product-page .pd-aside{
+  position:sticky;
+  top:calc(var(--header-h) + var(--promo-h) + 16px);
+  display:grid; gap:14px; align-self:start;
+}
+.product-page .pd-card{ background:#0f172a; border:1px solid var(--border); border-radius:12px; padding:14px; }
+.product-page .pd-card h4{ margin:0 0 8px; }
+.product-page .pd-badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-weight:800; }
+.product-page .pd-badge--off{ background:#ffefb0; color:#222; }
+.product-page .pd-badge--cuotas{ background:#cbeafe; color:#0b1220; }
+.product-page .pd-badge--envio{ background:#bbf7d0; color:#064e3b; }
+.product-page .pd-cta{ display:flex; gap:12px; justify-content:center; margin:8px 0 28px; }
+
+/* Responsive detalle */
+@media (max-width: 960px){
+  .product-page .product-hero{ grid-template-columns: 1fr; gap:16px; }
+  .product-page .pd-gallery{ grid-template-columns: 1fr !important; }
+  .product-page .pd-thumbs-vertical{ display:none !important; }
+  .product-page .pd-thumbs-horizontal{ display:flex; justify-content:center; }
+  .product-page .product-detail__image{ height:340px; }
+  .product-page .product-detail__image.is-zoomed img{ transform:scale(1.5); }
+  .product-page .pd-aside{
+    position:static; grid-column:1 / -1;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+
+/* ===== Redes con colores oficiales ===== */
+.socials { display:flex; gap:12px; justify-content:center; }
+.socials__btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:999px; color:#fff;
+  box-shadow: var(--shadow); text-decoration:none; border:0;
+}
+
+/* Instagram gradient oficial */
+.sb--instagram{
+  background: radial-gradient(30% 30% at 30% 30%, #FFDC80 0, #FCAF45 25%, #F77737 45%, #F56040 60%, #FD1D1D 75%, #E1306C 87%, #C13584 100%);
+}
+
+/* Facebook / YouTube / TikTok */
+.sb--facebook{ background:#1877F2; }
+.sb--youtube{ background:#FF0000; }
+.sb--tiktok{ background:#000; }
+
+/* Hover */
+.socials__btn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+
+/* FAB de WhatsApp (aseguramos color oficial) */
+.fab.fab--whatsapp{ background:#25D366; }
+
+/* ===== “teléfono azul” heredado de algún widget viejo =====
+   Si te quedó algún botón flotante de un plugin anterior,
+   lo ocultamos de forma segura con estas clases comunes.
+   (Si no existe, no afecta a nada) */
+.call-now, .callnow, .float-phone, .phone-fab, .phone-widget,
+.wa-widget, .wa-widget-wrapper, .whatsapp-widget, .WhatsAppWidget {
+  display: none !important;
+}
+
+/* Stack de flotantes */
+.fab-stack{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 900;       /* debajo del overlay/menú, por encima del contenido */
+}
+
+/* Colores de marca */
+.fab--whatsapp{ background: #25D366; }  /* WhatsApp oficial */
+.fab--support{  background: var(--primary); }  /* Soporte (azul del sitio) */
+
+.fab svg{ width: 26px; height: 26px; }
+
+
+/* Promo Bar fija bajo el header y por encima de todo */
+.promo-bar{
+  position: sticky;
+  top: var(--header-h);
+  z-index: 1200;                   /* ↑ encima de cualquier contenido */
+  background: linear-gradient(90deg, #ff6a00, #ff3d00);
+  color: #fff;
+  box-shadow: var(--shadow);
+  min-height: var(--promo-h);
+}
+
+
+
+.fab-stack{
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 900; /* debajo del overlay/menú, arriba del contenido */
+}
+
+.fab--whatsapp{ background:#25D366; }  /* verde oficial */
+.fab--support{  background:var(--primary); }
+.fab svg{ width:26px; height:26px; }
+
+
+
+.site-content{ padding-bottom: 140px; }  /* deja espacio para los FABs */
+
+
+body.menu-open .promo-bar{
+  opacity:0; 
+  pointer-events:none;
+  transition: opacity .15s ease;
+}
+/* El drawer abre con la clase is-open */
+.side-menu{ transform: translateX(-100%); transition: transform .25s ease; z-index:1100; background: linear-gradient(to bottom, #8B0000, #5A0000); }
+.side-menu.is-open{ transform: none; }
+
+/* Overlay debajo del menú */
+.overlay{ z-index:1090; }
+
+/* PromoBar debajo del drawer y oculta sólo mientras el menú está abierto */
+.promo-bar{ z-index:95; position: sticky; top: var(--header-h); }
+body.menu-open .promo-bar{
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+
+
+.product-detail .gallery { display: grid; gap: 12px; grid-template-columns: 1fr; }
+.product-detail .gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; display: block; }
+.product-detail .info { margin-top: 16px; }
+.product-detail .price { font-weight: 700; }
+
+
+
+/* Grilla base */
+.products-grid {
+  display: grid;
+  gap: 16px;
+}
+
+/* 2 columnas en escritorio */
+@media (min-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* toque visual al hover (opcional) */
+.product-card:hover {
+  transform: translateY(-1px);
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+
+
+
+
+
+
+.grid--products {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .grid--products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+/* ====== PARCHE MINIMAL ====== */
+
+/* 1) Layout: 2 columnas en desktop (sidebar + contenido) */
+.catalog-page .catalog-layout{
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* Evita que el contenido empuje y rompa el grid por “overflow” */
+.catalog-page .catalog-layout > *{ min-width: 0; }
+
+/* En mobile: una sola columna (como ya hacés en JSX, esto sólo refuerza) */
+@media (max-width: 1023px){
+  .catalog-page .catalog-layout{ grid-template-columns: 1fr; }
+}
+
+/* 2) Fila de precio: dos inputs mitad y mitad sin desbordes */
+.filters-aside .price-row{
+  display: flex;
+  gap: 8px;
+}
+.filters-aside .price-row input{
+  flex: 1;
+  min-width: 0;
+}
+
+/* 3) No ocultar el layout nuevo por el limpiador */
+.catalog-page > :not(.breadcrumb):not(.only-mobile):not(.products-grid):not(.catalog-layout){
+  display: none !important;
+}
+
+
+
+/* Ocultar scrollbar del listado de categorías (sigue siendo desplazable) */
+.cat-list {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge antiguo */
+  padding-right: 6px;           /* evita que se recorte el contenido */
+}
+.cat-list::-webkit-scrollbar {  /* Chrome/Safari/Edge Chromium */
+  width: 0;
+  height: 0;
+}
+
+
+
+.cat-list{ overflow:visible; max-height:none; }
+@media (min-width:1024px){
+  .cat-list{ grid-template-columns:1fr 1fr; column-gap:8px; row-gap:6px; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==== Sticky robusto del panel de filtros (desktop) ==== */
+/* Asegura que el contenedor permita el sticky correctamente */
+.catalog-page { overflow: visible; }
+.catalog-layout { align-items: start; }
+
+/* El panel acompaña el scroll y, si es más alto, scrollea por dentro */
+.filters-aside{
+  position: sticky;
+  /* si tu header+promo suman aprox 96~110px, usá un valor fijo robusto */
+  top: 96px;                  /* <- ajustable: 84 / 96 / 110 según tu header/promo */
+  max-height: calc(100vh - 110px);  /* altura útil de la ventana */
+  overflow: auto;            /* scroll interno si hace falta */
+  min-height: 0;             /* MUY importante para que el overflow funcione en grid */
+  scrollbar-width: thin;     /* opcional, scrollbar finito */
+  z-index: 10;               /* por si alguna sombra lo tapa */
+}
+
+/* Las categorías SIN mini-scroll: que usen el scroll del aside */
+.filters-aside .filters-cats{
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* En mobile: comportamiento normal, nada sticky */
+@media (max-width: 1023px){
+  .filters-aside{
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+
+
+
+/* ===== FAB flotantes (WhatsApp + Mantenimiento) ===== */
+.fab-stack{
+  position: fixed !important;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999; /* por encima de promo bar, header, etc. */
+}
+.fab{
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  border: none; cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.15);
+}
+.fab--whatsapp{ background:#25D366; }
+.fab--support{  background:#2563eb; }
+
+/* Modal soporte */
+.modal-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  display: grid; place-items: center;
+  z-index: 10000;
+}
+.modal{
+  position: relative;
+  width: min(92vw, 520px);
+  background: #0f172a; color: #e5e7eb;
+  border-radius: 14px; padding: 18px;
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+}
+.modal-actions{ margin-top: 8px; display: flex; gap: 10px; flex-wrap: wrap; }
+.modal-close{
+  position: absolute; top: 8px; right: 8px;
+  width: 34px; height: 34px; border: none;
+  border-radius: 8px; background: transparent;
+  color: #cbd5e1; cursor: pointer; font-size: 18px;
+}
+.btn{ padding:10px 14px; border-radius:10px; border:1px solid #334155; background:#111827; color:#e5e7eb; text-decoration:none; }
+.btn--whatsapp{ border-color:#25D366; background:#1d3b2a; color:#d1fae5; }
+
+
+
+.fab__img{ width:56px; height:56px; border-radius:50%; object-fit:cover; display:block; }
+
+
+
+
+/* FABs: orden simple, sin superposiciones, con glow naranja */
+.fab-stack{
+  position: fixed; right: 18px; bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-end;
+  z-index: 9999;
+}
+
+.fab{
+  width: 56px; height: 56px;
+  border: none; background: transparent; padding: 0;
+  border-radius: 50%; display: grid; place-items: center;
+  position: relative; cursor: pointer;
+}
+.fab img{
+  width: 56px; height: 56px; display: block; border-radius: 50%;
+}
+
+/* Glow naranja tenue en ambos */
+.fab::before{
+  content:""; position:absolute; inset:-10px; border-radius:50%; pointer-events:none;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,122,26,.40) 0%,
+    rgba(255,122,26,.20) 45%,
+    rgba(255,122,26,.08) 65%,
+    rgba(255,122,26,0) 78%);
+  z-index: -1;
+}
+.fab:hover::before{
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255,122,26,.55) 0%,
+    rgba(255,122,26,.28) 45%,
+    rgba(255,122,26,.12) 65%,
+    rgba(255,122,26,0) 78%);
+}
+
+/* (opcional) modal mínimos si no los tenías */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:grid; place-items:center; z-index:10000 }
+.modal{ background:#fff; color:#0f172a; border-radius:12px; padding:20px; width:min(480px,92vw); box-shadow:0 20px 45px rgba(0,0,0,.35) }
+.modal-close{ float:right; font-size:18px; border:none; background:transparent; cursor:pointer }
+.modal-actions{ display:flex; gap:12px; margin-top:12px }
+.btn{ padding:10px 14px; border-radius:8px; text-decoration:none }
+.btn--whatsapp{ background:#25d366; color:#fff }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==== Mini buscador dentro del SideMenu ==== */
+.menu-search{
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.menu-search input[type="search"]{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  background: var(--card, #101a2f);
+  color: var(--text, #e6f0ff);
+}
+.menu-search .price-row{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.menu-search .price-row input{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  background: var(--card, #101a2f);
+  color: var(--text, #e6f0ff);
+}
+.menu-search .apply-btn{
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  background: var(--primary, #0ea5e9);
+  color: #fff; font-weight: 700;
+}
+
+/* ==== Ocultar el nav de escritorio en mobile (evita columnas desprolijas) ==== */
+.only-desktop{ display: none; }
+.only-mobile{ display: inline-flex; }
+@media (min-width: 1025px){
+  .only-desktop{ display: flex; }
+  .only-mobile{ display: none; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Grilla de productos centrada en mobile */
+.products-grid{
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 1025px){
+  .products-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* desktop básico */
+  }
+}
+@media (max-width: 1024px){
+  .products-grid{
+    grid-template-columns: minmax(260px, 1fr);
+    justify-content: center;         /* centra las columnas */
+    justify-items: center;           /* centra cada card */
+    padding: 0 12px;
+  }
+  .product-card{
+    width: min(360px, 100%);
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .product-card .card__thumb{
+    height: 200px;                   /* altura pareja de thumb */
+    overflow: hidden;
+  }
+  .product-card .card__thumb img{
+    width: 100%; height: 100%; object-fit: cover;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/* --- BORRAR EL DE ABAJO, DE UNA --- */
+
+/* 1) Si hay dos seguidas, oculta la segunda */
+.promo-bar + .promo-bar{
+  display: none !important;
+}
+
+/* 2) Si el duplicado está dentro del contenido de la página */
+.site-content .promo-bar,
+.catalog-page .promo-bar,
+.catalog-layout .promo-bar{
+  display: none !important;
+}
+
+/* 3) Seguro extra: cualquier .promo.bar que no sea la primera del documento */
+body .promo-bar:not(:first-of-type){
+  display: none !important;
+}
+
+
+/* ==== MOBILE: que NO se corte al hacer scroll ==== */
+@media (max-width: 768px){
+
+  /* 0) Borrar la promo de abajo (el duplicado) */
+  .promo-bar + .promo-bar{
+    display: none !important;
+  }
+
+  /* 1) El header pegado arriba */
+  .site-header{
+    position: sticky;
+    top: 0;
+    z-index: 1002;
+    overflow: visible !important; /* por si recorta */
+  }
+
+  /* 2) La promo pegada DEBAJO del header */
+  :root{
+    --header-h: 72px;   /* ajustá si tu header es más alto/bajo */
+    --promo-h: 72px;    /* ajustá a la altura real de tu barra promo */
+  }
+  .promo-bar{
+    position: sticky;
+    top: var(--header-h);
+    z-index: 1001;
+  }
+
+  /* 3) Empujar el contenido para que nada quede tapado */
+  .site-content{
+    padding-top: calc(var(--header-h) + var(--promo-h));
+    overflow: visible !important;
+  }
+
+  /* 4) Por si algún wrapper recorta */
+  .site-wrapper{ overflow: visible !important; }
+}
+/* ==== MOBILE: sin hueco entre la promo y el primer producto ==== */
+@media (max-width: 768px){
+  /* ya dejamos solo la promo de arriba */
+  .promo-bar + .promo-bar{ display:none !important; }
+
+  /* header y promo sticky (si ya lo tenés, dejalo igual) */
+  .site-header{ position: sticky; top:0; z-index:1002; overflow:visible !important; }
+  :root{ --header-h:72px; --promo-h:72px; }
+  .promo-bar{
+    position: sticky; top: var(--header-h); z-index:1001;
+    margin-bottom: 0 !important; /* quita separación propia */
+  }
+
+  /* empuje justo para que no tape nada */
+  .site-content{
+    padding-top: calc(var(--header-h) + var(--promo-h));
+  }
+
+  /* 🔧 quitar el hueco extra del primer hijo del contenido */
+  .site-content > *:first-child{ margin-top: 0 !important; }
+
+  /* si usás estos wrappers, anulamos su padding/margen superior */
+  .catalog-page,
+  .catalog-layout,
+  .site-wrapper{ padding-top: 0 !important; margin-top: 0 !important; }
+
+  /* si el primer elemento es un título o la grilla */
+  .catalog-page h2:first-child,
+  .catalog-layout h2:first-child,
+  section[aria-live="polite"]:first-child,
+  .grid.grid--products:first-child{
+    margin-top: 0 !important;
+  }
+}
+/* === MOBILE: sin duplicado y sin hueco entre promo y productos === */
+@media (max-width: 768px){
+
+  /* Borrar la promo de abajo (el duplicado) */
+  .promo-bar + .promo-bar{ display:none !important; }
+
+  /* Header y promo pegados arriba (no se cortan al scrollear) */
+  .site-header{ position: sticky; top:0; z-index:1002; overflow:visible !important; }
+  .promo-bar{
+    position: sticky;
+    top: var(--header-h, 72px);
+    z-index:1001;
+    margin:0 !important;         /* sin separación propia */
+  }
+
+  /* 🔧 Eliminar el hueco azul */
+  .site-content{ padding-top:0 !important; margin-top:0 !important; }
+  .site-content > *:first-child{ margin-top: 4px !important; } /* micro respiro */
+
+  /* Si tu primer bloque es alguno de estos, también sin margen/padding */
+  .catalog-page,
+  .catalog-layout,
+  .grid--products,
+  section[aria-live="polite"]{
+    padding-top:0 !important;
+    margin-top:0 !important;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/* ============================
+   FABs que NO pisan las redes
+   (CSS puro, mobile-first)
+   ============================ */
+@media (max-width: 768px){
+  :root{
+    --fab-gap: 16px;            /* margen desde el borde */
+    --lift: 96px;               /* cuánto subir sobre las redes (ajustable) */
+  }
+
+  /* Tu stack de FABs queda fijo como siempre */
+  .fab-stack{
+    position: fixed !important;
+    right: 16px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + var(--fab-gap));
+    z-index: 9999;
+    transform: translateY(0);   /* estado base */
+    will-change: transform;
+  }
+
+  /* El contenedor de redes del footer (ajustá el selector si usás otro) */
+  .site-footer .footer-social{
+    /* define la línea de tiempo del scroll del bloque de redes */
+    view-timeline-name: --social;
+    view-timeline-axis: block;
+  }
+
+  /* PRO: cuando el bloque de redes entra en view, el FAB se eleva solo */
+  @supports (animation-timeline: view()){
+    .fab-stack{
+      animation-name: fab-avoid-social;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --social;
+      /* Empieza a elevarse cuando la barra de redes asoma (entry 100%)
+         y termina cuando ya está completamente visible (entry 0%). */
+      animation-range: entry 100% to entry 0%;
+    }
+
+    @keyframes fab-avoid-social{
+      from { transform: translateY(0); }
+      to   { transform: translateY(calc(-1 * (var(--lift) + var(--fab-gap)))); }
+    }
+  }
+
+  /* Fallback elegante (navegadores sin view-timeline):
+     agregamos un pequeño colchón de scroll para no tocar tamaños/posiciones */
+  @supports not (animation-timeline: view()){
+    .site-content::after{
+      content: "";
+      display: block;
+      height: calc(var(--lift) + var(--fab-gap));
+    }
+  }
+}
+
+
+
+
+/* Mobile: bajar un toque los FAB */
+@media (max-width: 768px){
+  :root{
+    --fab-gap: 8px;   /* antes 16px — probá 8px o 10px */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================
+   MOBILE — Header fijo + Promo fija sin cortes
+   (con colchón seguro, 100% CSS)
+   ========================================== */
+@media (max-width: 768px){
+
+  /* ⬇️ Ajustá solo estos valores si hiciera falta */
+  :root{
+    /* Alto real del header (aprox). Subí/bajá si lo ves justo. */
+    --header-h: clamp(76px, 10vh, 96px);
+    /* Alto real de la promo */
+    --promo-h:  clamp(64px, 9vh, 88px);
+    /* Colchón extra para evitar solape inicial (anti-corte) */
+    --promo-gap: 8px;  /* probá 6–10px si querés más/menos aire */
+  }
+
+  /* Dejar una sola promo (la de arriba) */
+  .promo-bar + .promo-bar,
+  .promo-bar:not(:first-of-type){
+    display: none !important;
+  }
+
+  /* Header fijo arriba, por encima de todo */
+  header.site-header{
+    position: fixed !important;
+    top: 0; left: 0; right: 0;
+    z-index: 1003 !important;
+    overflow: visible !important;
+    transform: none !important;
+    contain: none !important;
+  }
+
+  /* Promo fija INMEDIATAMENTE debajo del header + colchón anti-corte */
+  .promo-bar{
+    position: fixed !important;
+    top: calc(var(--header-h) + var(--promo-gap)) !important;
+    left: 0; right: 0;
+    z-index: 1002 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Empujar el contenido para que no quede tapado */
+  main.site-content{
+    padding-top: calc(var(--header-h) + var(--promo-h) + var(--promo-gap)) !important;
+    margin-top: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Blindaje por si algún wrapper recorta */
+  .site-wrapper, .header-wrap, .masthead-wrap{
+    overflow: visible !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}
+
+
+/* Resalta el primer resultado cuando aplicás filtros */
+.product.hit{
+  outline: 2px solid var(--primary, #0ea5e9);
+  box-shadow: 0 0 0 6px rgba(14,165,233,.25);
+  transition: box-shadow .3s ease, outline-color .3s ease;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Chips / botones */
+.chip{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:999px; font-weight:800; letter-spacing:.2px;
+  border:1px solid #334155; background:#0f172a; color:#fff; cursor:pointer;
+  transition:border-color .15s, box-shadow .15s, transform .06s;
+}
+.chip:hover{ border-color:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,.25); }
+.chip:active{ transform: translateY(1px); }
+.chip.is-active{ border-color:#22c55e; background:#16a34a22; box-shadow:0 0 0 2px rgba(34,197,94,.35); }
+.chip--ghost{ background: transparent; }
+
+/* StarFilterPro */
+.rating-filter{ display:flex; flex-wrap:wrap; gap:10px; }
+.chip--rating[data-size="sm"]{ padding:6px 10px; }
+.chip--rating .stars{ display:inline-flex; gap:2px; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== Panel unificado ===== */
+.filters-card{
+  position: sticky; top: 84px; align-self: start;
+  background: rgba(15,23,42,.75);
+  color:#fff; border-radius:14px; padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.06);
+  transition: box-shadow .15s, border-color .15s;
+}
+.filters-card:hover, .filters-card:focus-within{
+  border-color:#22c55e;
+  box-shadow:0 0 0 1px #22c55e, 0 0 24px rgba(34,197,94,.35), 0 10px 30px rgba(0,0,0,.35);
+}
+.filters-title{ margin:0 0 12px; font-size:16px; font-weight:900; }
+
+.filters-field{ margin-bottom:14px; }
+.filters-field > label{
+  display:block; font-size:13px; opacity:.9; margin-bottom:6px; font-weight:700;
+}
+.filters-field input{
+  width:100%; padding:10px 12px;
+  border-radius:10px; border:1px solid #334155;
+  background:#0f172a; color:#fff;
+  outline:none; transition:border-color .15s, box-shadow .15s;
+}
+.filters-field input:focus{
+  border-color:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,.35);
+}
+.filters-price{ display:grid; gap:8px; }
+@media (min-width:420px){ .filters-price{ grid-template-columns:1fr 1fr; } }
+
+.filters-actions{ display:flex; gap:8px; }
+.btn-ghost{
+  flex:1; padding:10px 12px; border-radius:10px;
+  border:1px solid #334155; background:transparent; color:#fff; cursor:pointer;
+}
+.btn-ghost:hover{ border-color:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,.25); }
+
+/* ===== Chips base (neón) ===== */
+.chip{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:999px; font-weight:800; letter-spacing:.2px;
+  border:1px solid #334155; background:#0f172a; color:#fff; cursor:pointer;
+  transition:border-color .15s, box-shadow .15s, transform .06s;
+}
+.chip:hover{ border-color:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,.25); }
+.chip:active{ transform: translateY(1px); }
+.chip.is-active{ border-color:#22c55e; background:#16a34a22; box-shadow:0 0 0 2px rgba(34,197,94,.35); }
+.chip--ghost{ background:transparent; }
+
+/* ===== Estrellas ===== */
+.rating-filter{ display:flex; flex-wrap:wrap; gap:10px; }
+.chip--rating[data-size="sm"]{ padding:6px 10px; }
+.chip--rating .stars{ display:inline-flex; gap:2px; }
+
+/* ===== Categorías: columna sin scroll interno ===== */
+.filters-cats{
+  display:grid; gap:8px;
+  /* sin max-height, sin overflow -> la página scrollea */
+}
+.chip--cat{
+  width:100%; justify-content:flex-start; border-radius:12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Cuando el panel de filtros está montado en el side-menu,
+   oculta cualquier cosa que NO sea nuestro .filter-panel */
+body[data-filter-mounted="1"] .side-menu .side-menu__body > *:not(.filter-panel) {
+  display: none !important;
+}
+
+/* Redondeo: si por alguna razón no se setea la bandera del body
+   pero sí la clase en el target, también ocultamos */
+.side-menu .side-menu__body.with-filter-panel > *:not(.filter-panel) {
+  display: none !important;
+}
+
+/* Opcional: reset de padding para que el panel se vea prolijo */
+body[data-filter-mounted="1"] .side-menu .side-menu__body {
+  padding: 12px 12px 88px; /* espacio para el footer sticky del panel */
+  box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Solo en admin ocultamos elementos del sitio público */
+.admin-mode footer,
+.admin-mode .site-footer,
+.admin-mode #footer,
+.admin-mode .fab-stack,
+.admin-mode .social-floating,
+.admin-mode .social-bar { display: none !important; }
+/* Refuerzo para contenedores principales: nada debe interferir con el footer fijo */
+body, #root, .site-wrapper {
+  position: static !important;
+  overflow: visible !important;
+}
+
+
+
+.support-inline-btn {
+  border: 0;
+  background: #1e293b;              /* fondo oscuro para que el ícono se vea */
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px rgba(72, 5, 79, 0.08);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.support-inline-btn img {
+  display: block;
+}
+
+.support-inline-btn:hover {
+  transform: translateY(-1px);
+  background: #4c1d95;              /* violeta tirando a granate que elegimos */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.22);
+}
+
+/* versión un poquito más grande para mobile, por si la usamos */
+.support-inline-btn--lg {
+  padding: 8px;
+}
+
+
+
+
+
+
+
+/* ====== AJUSTE RESPONSIVE DE CARDS EN CATALOGO ====== */
+
+/* Layout base del catálogo */
+.catalog-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px 96px; /* espacio abajo para que no se tape con el botón flotante */
+}
+
+/* Grid base: 1 columna en celu chico */
+.catalog-page .products-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+/* La card ocupa todo el ancho de la columna, sin agrandarse más de la cuenta */
+.catalog-page .product-card {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Ajustes de texto y espaciado para pantallas muy pequeñas */
+@media (max-width: 400px) {
+  .catalog-page .product-card h3 {
+    font-size: 13px;
+  }
+
+  .catalog-page .product-card .btn {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+}
+
+/* 2 columnas en celulares grandes / pantallas medias */
+@media (min-width: 480px) {
+  .catalog-page .products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 3 columnas en tablets */
+@media (min-width: 768px) {
+  .catalog-page {
+    padding: 0 16px 96px;
+  }
+
+  .catalog-page .products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+/* 4 columnas en desktop */
+@media (min-width: 1024px) {
+  .catalog-page .products-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+
+
+
+
+/* ==== OVERRIDE RÁPIDO: SIDE-MENU VIOLETA NEÓN ==== */
+body .side-menu {
+  background:
+    radial-gradient(140% 180% at 0% 0%, rgba(147, 51, 234, 0.95) 0%, transparent 55%),
+    radial-gradient(160% 200% at 100% 0%, rgba(236, 72, 153, 0.90) 0%, transparent 60%),
+    #020617 !important;
+  border-right: 1px solid rgba(244, 114, 182, 0.6) !important;
+}
+
+
+
+
+/* ==== NEÓN VIOLETA PARA EL PANEL DE FILTROS ==== */
+body .filters-aside,
+body .filter-panel,
+body .filters-card {
+  border: 2px solid rgba(147, 51, 234, 0.85) !important;
+  box-shadow:
+    0 0 12px rgba(168, 85, 247, 0.65),
+    0 0 24px rgba(192, 132, 252, 0.45),
+    inset 0 0 8px rgba(147, 51, 234, 0.35) !important;
+
+  background: #020617dd !important; /* mismo fondo oscuro */
+  border-radius: 20px !important;
+}
+
+
+
+/* ==== NEÓN VIOLETA PARA EL PANEL DE FILTROS (MOBILE) ==== */
+.filter-panel {
+  /* fondo un poquito más violeta */
+  background: radial-gradient(circle at 0 0, #4c1d95 0%, #020617 55%) !important;
+
+  border-radius: 20px !important;
+
+  /* ✨ borde + glow violeta */
+  border: 1px solid rgba(168, 85, 247, 0.95) !important;
+  box-shadow:
+    0 0 0 1px rgba(168, 85, 247, 0.9),
+    0 0 18px rgba(192, 132, 252, 0.9),
+    0 0 40px rgba(147, 51, 234, 0.7) !important;
+}
+
+
+
+
+
+
+/* ============================================================
+      🔥🔥  VIOLETA NEÓN EXTREMO PARA PANEL DE FILTROS 🔥🔥
+   ============================================================ */
+
+.side-menu__body {
+  background: radial-gradient(circle at top left,
+    #ff00e5 0%, #6a00ff 40%, #130026 100%);
+  
+  border: 3px solid rgba(255, 0, 255, 0.9);
+  border-radius: 22px;
+  
+  box-shadow:
+    0 0 22px rgba(255, 0, 255, 0.95),
+    0 0 42px rgba(153, 0, 255, 0.55),
+    inset 0 0 35px rgba(255, 0, 255, 0.35);
+  
+  padding: 22px !important;
+  animation: neonPulse 2.2s infinite alternate ease-in-out;
+}
+
+/* 🔥 Glow respirando */
+@keyframes neonPulse {
+  from {
+    box-shadow:
+      0 0 12px rgba(255, 0, 255, 0.7),
+      0 0 26px rgba(153, 0, 255, 0.4),
+      inset 0 0 18px rgba(255, 0, 255, 0.25);
+  }
+  to {
+    box-shadow:
+      0 0 30px rgba(255, 0, 255, 1),
+      0 0 55px rgba(153, 0, 255, 0.75),
+      inset 0 0 45px rgba(255, 0, 255, 0.45);
+  }
+}
+
+/* ============================================================
+         🔥🔥  INPUTS + BOTONES + CHIPS — NEÓN EXTREMO 🔥🔥
+   ============================================================ */
+
+.side-menu__body input,
+.side-menu__body select,
+.side-menu__body button,
+.side-menu__body .chip {
+  background: rgba(50, 0, 75, 0.75) !important;
+  border: 2px solid rgba(255, 0, 255, 0.7) !important;
+
+  color: #fff !important;
+  border-radius: 14px;
+
+  box-shadow:
+    0 0 12px rgba(255, 0, 255, 0.45),
+    inset 0 0 16px rgba(255, 0, 255, 0.25);
+
+  transition: 0.15s ease;
+}
+
+/* Hover estilo cyberpunk */
+.side-menu__body input:hover,
+.side-menu__body select:hover,
+.side-menu__body button:hover,
+.side-menu__body .chip:hover {
+  box-shadow:
+    0 0 20px rgba(255, 0, 255, 0.75),
+    inset 0 0 22px rgba(255, 0, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Estado activo / presionado */
+.side-menu__body button:active,
+.side-menu__body .chip:active {
+  transform: scale(0.97);
+  box-shadow:
+    0 0 30px rgba(255, 0, 255, 0.9),
+    inset 0 0 30px rgba(255, 0, 255, 0.45);
+}
+
+/* ============================================================
+                 🔥🔥 TITULOS NEÓN 🔥🔥
+   ============================================================ */
+
+.side-menu__body h2,
+.side-menu__body h3,
+.side-menu__body h4,
+.side-menu__body label {
+  color: #ffb7ff !important;
+  text-shadow: 0 0 12px rgba(255, 0, 255, 0.6);
+}
+
+/* Línea divisoria neón */
+.side-menu__body hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgba(255, 0, 255, 0.7), rgba(140, 0, 255, 0.6));
+  box-shadow: 0 0 12px rgba(255, 0, 255, 0.8);
+  margin: 18px 0;
+}
+
+
+
+
+/* Ocultamos la llave grande del header, dejamos sólo la del panel de filtros */
+.site-header .support-inline-btn,
+.site-header .support-inline-btn--lg {
+  display: none !important;
+}
+
+
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Que la llavecita sea sutil al lado del carrito */
+.support-inline-header {
+  display: inline-flex;
+}
+
+
+
+
+/* ===== HOTFIX: mostrar soporte + carrito en el header ===== */
+
+.header-actions {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Aseguramos que la llavecita NO esté oculta por ningún estilo viejo */
+.header-actions .support-inline-btn {
+  display: inline-flex !important;
+  margin-left: 4px;
+}
+
+/* Mini ajuste para que el carrito no se rompa */
+.header-actions a[href="/pedido-whatsapp"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

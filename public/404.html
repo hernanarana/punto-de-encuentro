@@ -1,0 +1,19 @@
+<!-- public/404.html -->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>404</title>
+    <meta http-equiv="refresh" content="0; url=./index.html" />
+  </head>
+  <body>
+    <script>
+      // Fallback SPA para GH Pages: reescribe la URL sin perder la ruta
+      var redirect = sessionStorage.getItem("GH_REDIRECT");
+      if (!redirect) {
+        sessionStorage.setItem("GH_REDIRECT", location.pathname + location.search + location.hash);
+        location.replace("./index.html");
+      }
+    </script>
+  </body>
+</html>

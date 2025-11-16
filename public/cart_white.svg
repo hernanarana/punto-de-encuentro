@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none">
+  <!-- Ruedas -->
+  <circle cx="8" cy="19" r="1.4" stroke="white" stroke-width="1.6"></circle>
+  <circle cx="17" cy="19" r="1.4" stroke="white" stroke-width="1.6"></circle>
+
+  <!-- Cuerpo del carrito -->
+  <path d="M4 5h2l1.2 9.2c.1.7.7 1.3 1.4 1.3h7.4c.6 0 1.2-.4 1.4-1l1.6-6.4H8.2" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+
+  <!-- Manija -->
+  <path d="M4 5V3.8C4 3.35 4.35 3 4.8 3H6" stroke="white" stroke-width="1.6" stroke-linecap="round"></path>
+</svg>

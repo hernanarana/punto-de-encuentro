@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gradOrange" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8a33"/>
+      <stop offset="100%" stop-color="#ff6a00"/>
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feColorMatrix type="matrix" values="
+        1 0 0 0 0
+        0 1 0 0 0
+        0 0 1 0 0
+        0 0 0 .4 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Dark circular background -->
+  <circle cx="256" cy="256" r="224" fill="#0f172a"/>
+  <!-- Glow ring -->
+  <circle cx="256" cy="256" r="224" fill="none" stroke="url(#gradOrange)" stroke-width="10" filter="url(#softGlow)"/>
+  <!-- Chat bubble with tail -->
+  <g filter="url(#softGlow)">
+    <path d="M256 116c-80 0-144 56-144 126 0 24 7 46 21 65l-16 63c-1 4 3 8 7 7l59-18c22 12 47 19 73 19 80 0 144-56 144-126S336 116 256 116z"
+          fill="none" stroke="url(#gradOrange)" stroke-width="22" stroke-linejoin="round"/>
+    <!-- Phone handset simplified -->
+    <path d="M204 204c-9 10-7 26 2 40 22 36 61 63 88 72 14 5 29 2 38-8 5-6 6-14 3-21l-17-17c-5-6-13-7-20-3l-16 9c-22-10-40-25-53-44l9-16c4-7 3-15-3-20l-17-17c-7-7-18-6-24 1z"
+          fill="url(#gradOrange)"/>
+  </g>
+</svg>

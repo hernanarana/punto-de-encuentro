@@ -1,0 +1,18 @@
+/* src/components/promo.css */
+.promo-banner{
+  position:fixed; right:96px; bottom:24px; z-index:940;
+  background:#ff6a00; color:#fff; border-radius:14px;
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+  padding:18px 20px; width:min(440px, calc(100% - 140px));
+  text-decoration:none; cursor:pointer; display:block;
+  transition: transform .08s ease, filter .12s ease;
+}
+.promo-banner:hover{ transform:translateY(-1px); filter:brightness(.98) }
+.promo-title{ font-size:24px; font-weight:900; letter-spacing:.3px }
+.promo-sub{ margin-top:4px; font-weight:700 }
+.promo-banner:focus-visible{
+  outline:3px solid #fff; outline-offset:3px; border-radius:14px;
+}
+@media (max-width: 820px){
+  .promo-banner{ right:16px; bottom:16px; width:calc(100% - 32px) }
+}

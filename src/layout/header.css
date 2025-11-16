@@ -1,0 +1,496 @@
+/* src/layout/header.css */
+.site-header{
+  position: sticky; top:0; z-index:1000;
+  background:#10a4ea; color:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+}
+.header-inner{
+  max-width:1200px; margin:0 auto;
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center;
+  gap:18px; padding:12px 16px;
+}
+
+/* Marca */
+.brand{ display:flex; align-items:center; gap:10px; color:#fff; text-decoration:none }
+.brand__logo{ display:grid; place-items:center; background:#fff; border-radius:10px; width:36px; height:36px; }
+.brand__text{ display:flex; flex-direction:column; line-height:.9 }
+.brand__title{ font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; font-weight:900; letter-spacing:.4px; font-size:22px }
+.brand__subtitle{ font-family:"Poppins",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; font-weight:700; font-size:12px; opacity:.95; margin-top:4px }
+
+/* Nav centrado y simétrico */
+.main-nav{ display:flex; justify-content:center; gap:26px; }
+.nav-link{
+  color:#eaf9ff; text-decoration:none; font-weight:700; padding:6px 0;
+}
+.nav-link.active{ text-decoration:underline; }
+
+/* Carrito */
+.cart-btn{
+  position:relative; background:#fff; color:#0a7ab8; border:0;
+  width:44px; height:44px; border-radius:999px; display:grid; place-items:center;
+  box-shadow:0 10px 20px rgba(0,0,0,.16); cursor:pointer;
+}
+.cart-badge{
+  position:absolute; right:-2px; top:-2px; min-width:18px; height:18px;
+  background:#ff3b30; color:#fff; border-radius:999px; font-size:11px; font-weight:800;
+  display:grid; place-items:center; padding:0 5px; box-shadow:0 0 0 2px #8B0000;
+}
+
+/* Responsive */
+@media (max-width: 980px){
+  .main-nav{ display:none }
+  .header-inner{ grid-template-columns:auto auto; justify-content:space-between }
+  .brand__title{ font-size:18px }
+}
+
+
+
+
+
+/* Alturas consistentes por modo */
+:root{
+  --header-h-desktop: 72px;
+  --header-h-mobile: 56px;
+  --header-h: var(--header-h-desktop);
+}
+@media (max-width: 767px){
+  :root{ --header-h: var(--header-h-mobile); }
+}
+
+/* Header sticky arriba de todo */
+.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 1200;                  /* > promo y > contenido */
+  background: linear-gradient(135deg, #8B0000, #5A0000);
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+}
+
+/* Asegura altura y alineación interna */
+.header-inner{
+  max-width: var(--container, 1400px);
+  margin: 0 auto;
+  padding: 0 16px;
+  height: var(--header-h);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botón menú mobile */
+.icon-btn{
+  width: 40px; height: 40px; border: 0; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.15); color: #fff; cursor: pointer;
+}
+.icon-btn span{ font-size: 20px; line-height: 1; }
+
+/* Marca */
+.brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; }
+.brand-logo{ display:inline-grid; place-items:center; width:40px; height:40px; border-radius:10px; background:#fff; overflow:hidden; }
+.brand-text{ display:flex; flex-direction:column; line-height:1.1 }
+.brand-title{ font-weight:900; letter-spacing:.4px; font-size:18px }
+.brand-subtitle{ font-size:12px; opacity:.98; font-weight:700 }
+
+/* Nav desktop (se oculta en mobile con tu util) */
+.main-nav{ display:flex; gap:22px; justify-content:center; flex-wrap:wrap }
+.nav-link{ color:#e9f8ff; text-decoration:none; font-weight:800; text-shadow:0 1px 0 rgba(0,0,0,.15); }
+.nav-link:hover, .nav-link.active{ text-decoration:underline }
+
+
+
+
+/* ======== FIX ANDROID / MOBILE SOLO ======== */
+@media (max-width: 768px){
+
+  /* El header queda por encima para que el logo sea clickeable */
+  .site-header{
+    position: sticky;
+    top: 0;
+    z-index: 2000;          /* > promo, > FAB, > backdrop */
+    pointer-events: auto;
+  }
+  .site-header .brand{ pointer-events: auto; }
+
+  /* La PromoBar debe quedar debajo del header */
+  .promo-bar{
+    position: sticky;       /* si ya lo tenés, esto no rompe */
+    top: 0;
+    z-index: 1000;          /* < 2000 del header */
+  }
+
+  /* Si abrís el drawer/side menu, que la promo no bloquee taps */
+  body.menu-open .promo-bar{
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s ease;
+  }
+
+  /* FABs / Redes por debajo del header para no tapar el brand */
+  .fab-stack, .social-floating{
+    z-index: 1200;          /* < header (2000) */
+  }
+
+  /* Backdrop del drawer por debajo del header para que el brand igual responda */
+  .drawer__backdrop, .backdrop{
+    z-index: 1500;          /* < header (2000) */
+  }
+
+  /* Asegurá que el botón hamburguesa exista en mobile */
+  .only-mobile{ display: inline-flex !important; }
+}
+
+
+@media (max-width: 768px){
+  .site-header{ position: sticky; top:0; z-index:2000; pointer-events:auto; }
+  .site-header .brand{ pointer-events:auto; }
+  .promo-bar{ position: sticky; top:0; z-index:1000; }
+  body.menu-open .promo-bar{ opacity:0; pointer-events:none; transition:opacity .15s; }
+  .fab-stack, .social-floating{ z-index:1200; }
+  .drawer__backdrop, .backdrop{ z-index:1500; }
+}
+
+
+
+@media (max-width: 768px){
+  .site-header{ position: sticky; top:0; z-index:2000; pointer-events:auto; }
+  .site-header .brand{ pointer-events:auto; }
+  .promo-bar{ position: sticky; top:0; z-index:1000; }
+  body.menu-open .promo-bar{ opacity:0; pointer-events:none; transition:opacity .15s; }
+  .fab-stack, .social-floating{ z-index:1200; }
+  .drawer__backdrop, .overlay, .backdrop{ z-index:1500; } /* debajo del header */
+}
+
+
+
+
+/* ✅ Evitar duplicado de menú en Android: oculta legacy cuando hay filter-panel */
+@media (max-width: 768px){
+  .side-menu__body.with-filter-panel .legacy-menu{
+    display: none !important;
+  }
+
+  /* Anti-solapes de taps en Android */
+  .site-header{ position: sticky; top:0; z-index:2000; pointer-events:auto; }
+  .site-header .brand{ pointer-events:auto; }
+  .promo-bar{ position: sticky; top:0; z-index:1000; }
+  body.menu-open .promo-bar{ opacity:0; pointer-events:none; transition:opacity .15s; }
+  .fab-stack, .social-floating{ z-index:1200; }
+  .drawer__backdrop, .overlay, .backdrop{ z-index:1500; }
+}
+
+
+/* ✅ ANDROID: solo debe verse el FilterPanel del menú hamburguesa */
+@media (max-width: 768px){
+  /* Oculta paneles de filtros que NO estén dentro del aside.side-menu */
+  .filter-panel{ display: none !important; }
+  .side-menu .filter-panel{ display: block !important; }
+
+  /* Si algún componente inyecta secciones fp-* fuera del menú, ocultalas */
+  [class^="fp-"], [class*=" fp-"]{ display: none !important; }
+  .side-menu [class^="fp-"], .side-menu [class*=" fp-"]{ display: initial !important; }
+
+  /* Oculta navegación legacy para evitar doble menú debajo del panel */
+  .side-menu__body.with-filter-panel .legacy-menu{ display: none !important; }
+
+  /* Anti-solapes de taps con overlays/promos */
+  .site-header{ position: sticky; top:0; z-index:2000; pointer-events:auto; }
+  .drawer__backdrop, .overlay, .backdrop{ z-index:1500; }
+}
+
+
+
+
+
+/* ✅ ANDROID: mostrar un solo panel de filtros (el del menú) */
+@media (max-width: 768px){
+  /* Oculta paneles .filter-panel que NO estén dentro del menú */
+  .filter-panel{ display: none !important; }
+  .side-menu .filter-panel{ display: block !important; }
+
+  /* Si alguien inyecta bloques fp-* fuera del menú, ocultarlos */
+  [class^="fp-"], [class*=" fp-"]{ display: none !important; }
+  .side-menu [class^="fp-"], .side-menu [class*=" fp-"]{ display: initial !important; }
+
+  /* Oculta la navegación legacy cuando hay panel de filtros (evita doble menú) */
+  .side-menu__body.with-filter-panel .legacy-menu{ display: none !important; }
+
+  /* Anti-solapes de taps con overlays/promos */
+  .site-header{ position: sticky; top:0; z-index:2000; pointer-events:auto; }
+  .drawer__backdrop, .overlay, .backdrop{ z-index:1500; }
+}
+
+
+
+
+/* ANDROID: mostrar un solo panel de filtros (el del menú) */
+@media (max-width: 768px){
+  /* Por si otras pantallas inyectan paneles, ocultá todos... */
+  .filter-panel{ display: none !important; }
+  /* ...y dejá visible SOLO el que está dentro del menú */
+  .side-menu .filter-panel{ display: block !important; }
+
+  /* Bloques sueltos de filtros (prefijos fp-), ocultar globalmente */
+  [class^="fp-"], [class*=" fp-"]{ display: none !important; }
+  .side-menu [class^="fp-"], .side-menu [class*=" fp-"]{ display: initial !important; }
+
+  /* Ocultar navegación legacy debajo del panel para que no duplique */
+  .side-menu__body.with-filter-panel .legacy-menu{ display: none !important; }
+
+  /* Anti solapes */
+  .site-header{ position: sticky; top:0; z-index:2000; pointer-events:auto; }
+  .drawer__backdrop, .overlay, .backdrop{ z-index:1500; }
+}
+
+
+/* === FilterPanel — estilos mobile (look oscuro + chips redondeadas) === */
+@media (max-width: 767px){
+  .filter-panel{
+    --bg:#0b1324;
+    --bg-soft:#0f1c33;
+    --text:#eaf3ff;
+    --muted:#b6c7e0;
+    --chip-bg:#0f2038;
+    --chip-active:#143a66;
+    --primary:#0ea5e9;
+    --primary-strong:#0b7cca;
+    --accent:#ff6a00;
+
+    color:var(--text);
+    background:var(--bg);
+    border-radius:16px;
+    padding:12px;
+    box-shadow:0 10px 24px rgba(0,0,0,.35);
+  }
+
+  .filter-panel .fp-head{ margin-bottom:6px; }
+  .filter-panel .fp-title{
+    font-weight:900; letter-spacing:.3px; font-size:18px;
+  }
+
+  .filter-panel .fp-body{
+    display:grid; gap:14px;
+    padding-bottom:72px; /* para no chocar con footer sticky */
+  }
+
+  .filter-panel .fp-sec{ display:grid; gap:8px; }
+  .filter-panel .fp-label{
+    font-weight:700; color:var(--muted); font-size:13px;
+  }
+
+  .filter-panel .fp-row{
+    display:grid; grid-template-columns:1fr auto; gap:8px;
+  }
+  .filter-panel .fp-input{
+    width:100%; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+    background:var(--bg-soft); color:var(--text);
+  }
+
+  .filter-panel .fp-btn{
+    padding:10px 14px; border-radius:12px; border:0; font-weight:800;
+  }
+  .filter-panel .fp-btn--primary{
+    background:linear-gradient(135deg, var(--primary), var(--primary-strong));
+    color:#fff;
+    box-shadow:0 6px 18px rgba(14,165,233,.35);
+  }
+  .filter-panel .fp-btn--ghost{
+    background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,.12);
+  }
+
+  .filter-panel .fp-chips{ display:flex; flex-wrap:wrap; gap:10px; }
+  .filter-panel .fp-chip{
+    background:var(--chip-bg); color:#e9f8ff; border:1px solid rgba(255,255,255,.06);
+    border-radius:999px; padding:10px 14px; font-weight:800;
+    text-shadow:0 1px 0 rgba(0,0,0,.15);
+  }
+  .filter-panel .fp-chip.is-active{
+    background:var(--chip-active); box-shadow:0 6px 18px rgba(14,165,233,.22);
+  }
+
+  /* Estrellas compactas */
+  .filter-panel .fp-stars{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .filter-panel .fp-chip--rating{
+    display:inline-flex; align-items:center; gap:4px;
+    background:var(--chip-bg); border-radius:999px; padding:8px 12px; border:1px solid rgba(255,255,255,.06);
+    color:#ffd57a;
+  }
+  .filter-panel .fp-chip--rating.is-active{
+    background:var(--chip-active); color:#ffe08a;
+  }
+  .filter-panel .fp-chip--rating svg{ width:16px; height:16px; }
+
+  /* Footer sticky con sombra */
+  .filter-panel .fp-actions{
+    position:sticky; bottom:8px; inset-inline:0;
+    display:flex; gap:10px; background:transparent;
+    padding-top:8px;
+  }
+  .side-menu .filter-panel .fp-actions{
+    background:linear-gradient(180deg, rgba(11,19,36,0) 0%, rgba(11,19,36,.85) 60%, rgba(11,19,36,1) 100%);
+    padding:12px 6px 6px 6px;
+    margin-inline:-6px;
+  }
+
+  /* Evitar choque con tus FAB */
+  .fab-stack{ z-index: 1400; }
+}
+
+
+
+
+
+
+
+
+
+
+
+/* === ANDROID — FilterPanel estilos finales === */
+@media (max-width: 767px){
+
+  /* Card y paleta (look coherente con desktop) */
+  .side-menu .filter-panel{
+    --bg:#0b1324;
+    --bg-soft:#0f1c33;
+    --text:#eaf3ff;
+    --muted:#b6c7e0;
+    --chip-bg:#0f2038;
+    --chip-active:#173b69;
+    --chip-muted:#0d1a2c;
+    --ring:#22c55e;                 /* borde/glow verde sutil */
+    --ring-soft: rgba(34,197,94,.25);
+    --primary:#0ea5e9;
+    --primary-strong:#0b7cca;
+
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 18px;
+    border: 2px solid rgba(34,197,94,.18);
+    box-shadow:
+      0 0 0 1px rgba(34,197,94,.08) inset,
+      0 12px 28px rgba(0,0,0,.35),
+      0 0 36px var(--ring-soft);
+    padding: 12px;
+  }
+
+  .filter-panel .fp-head{ margin-bottom: 6px; }
+  .filter-panel .fp-title{
+    font-size: 18px; font-weight: 900; letter-spacing: .3px;
+  }
+
+  .filter-panel .fp-body{
+    display: grid; gap: 14px;
+    padding-bottom: 72px; /* espacio para footer sticky */
+  }
+
+  .filter-panel .fp-sec{ display: grid; gap: 8px; }
+  .filter-panel .fp-label{
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  /* Inputs generales */
+  .filter-panel .fp-input{
+    background: var(--bg-soft);
+    color: var(--text);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 11px 12px;
+    outline: none;
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .filter-panel .fp-input::placeholder{ color:#a9bad2; opacity:.9; }
+  .filter-panel .fp-input:focus{
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px var(--ring-soft), 0 6px 20px rgba(0,0,0,.25);
+  }
+
+  /* Primera sección (buscar): input 1fr + botón auto */
+  .filter-panel .fp-sec:first-child .fp-row{
+    display:grid; grid-template-columns: 1fr auto; gap: 8px;
+  }
+
+  /* Precio: dos columnas iguales + números prolijos */
+  .filter-panel .fp-row:has(input.fp-input[type="number"]){
+    display:grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  }
+  .filter-panel input.fp-input[type="number"]{
+    font-variant-numeric: tabular-nums; /* columnas parejas */
+    text-align: right;
+    letter-spacing: .2px;
+    -moz-appearance: textfield;  /* Firefox */
+    appearance: textfield;       /* estándar */
+  }
+  /* quitar flechas WebKit */
+  .filter-panel input[type="number"]::-webkit-outer-spin-button,
+  .filter-panel input[type="number"]::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    appearance: none;            /* estándar → evita warning */
+    margin: 0;
+  }
+
+  /* Chips de categorías */
+  .filter-panel .fp-chips{ display:flex; flex-wrap:wrap; gap:10px; }
+  .filter-panel .fp-chip{
+    background: var(--chip-bg);
+    color: #e6f0ff;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-weight: 800;
+  }
+  .filter-panel .fp-chip.is-active{
+    background: var(--chip-active);
+    box-shadow: 0 0 0 3px var(--ring-soft);
+  }
+
+  /* Estrellas compactas */
+  .filter-panel .fp-stars{ display:flex; gap:10px; flex-wrap:wrap; }
+  .filter-panel .fp-chip--rating{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--chip-muted);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #ffd57a;
+  }
+  .filter-panel .fp-chip--rating.is-active{
+    background: var(--chip-active);
+    color:#ffe08a;
+    box-shadow: 0 0 0 3px var(--ring-soft);
+  }
+  .filter-panel .fp-chip--rating svg{ width:16px; height:16px; }
+
+  /* Botones */
+  .filter-panel .fp-btn{
+    border:0; border-radius:12px; padding:11px 14px; font-weight:800;
+  }
+  .filter-panel .fp-btn--primary{
+    background: linear-gradient(135deg,var(--primary),var(--primary-strong));
+    color:#fff;
+    box-shadow: 0 10px 24px rgba(14,165,233,.35);
+  }
+  .filter-panel .fp-btn--ghost{
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,.14);
+  }
+
+  /* Footer sticky con dos columnas simétricas */
+  .filter-panel .fp-actions{
+    position: sticky; bottom: 8px;
+    margin-top: 10px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    background: linear-gradient(180deg, rgba(11,19,36,0) 0%, rgba(11,19,36,.85) 60%, rgba(11,19,36,1) 100%);
+    padding: 10px 6px 6px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+
+  /* Evitar choque con FAB si lo tenés superpuesto */
+  .fab-stack{ z-index: 1400; }
+}
